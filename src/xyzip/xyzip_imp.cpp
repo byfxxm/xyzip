@@ -1,41 +1,48 @@
 #include "pch.h"
 #include "xyzip_imp.h"
 
-bool xyzip_imp::zip(const char* path)
+bool xyzip_imp::zip(const char* path, const char* directory)
 {
-	directory_entry entry(path);
+	directory_entry path_entry(path);
+	directory_entry directory_entry(directory);
 
-	if (!entry.exists())
+	if ((!path_entry.is_regular_file() && !path_entry.is_directory()))
 		return false;
 
-	auto pa = entry.path();
-	__zip_file.open(pa.parent_path().wstring() + L"\\" + pa.filename().wstring() + EXTENSION, ios::out | ios::binary);
+	if (!directory_entry.is_directory() && !create_directory(directory_entry))
+		return false;
 
-	if (entry.is_directory())
-		__push_directory(path);
-	else if (entry.is_regular_file())
-		__push_file(path);
-
-	if (__zip_file.is_open())
-		__zip_file.close();
+	__zip_file.open(path_entry, ios::out | ios::binary);
+	{
+		if (path_entry.is_directory())
+			__push_directory(path_entry);
+		else if (path_entry.is_regular_file())
+			__push_file(path_entry);
+		else
+			assert(0);
+	}
+	__zip_file.close();
 
 	return true;
 }
 
-bool xyzip_imp::unzip(const char* path)
+bool xyzip_imp::unzip(const char* file, const char* directory)
 {
-	directory_entry entry(path);
+	directory_entry file_entry(file);
+	directory_entry directory_entry(directory);
 
-	if (!entry.exists() || !entry.is_regular_file())
+	if (!file_entry.is_regular_file())
+		return false;
+
+	if (!directory_entry.is_directory() && !create_directory(directory_entry))
 		return false;
 
 	bool ret = true;
-	__unzip_directory = path;
-	__unzip_directory = __unzip_directory.parent_path();
+	__unzip_directory = file_entry.path().parent_path();
 
 	try
 	{
-		__unzip_file.open(path, ios::in | ios::binary);
+		__unzip_file.open(file_entry, ios::in | ios::binary);
 		while (__pop_file());
 	}
 	catch (exception ex)
@@ -44,27 +51,24 @@ bool xyzip_imp::unzip(const char* path)
 		ret = false;
 	}
 
-	if (__unzip_file.is_open())
-		__unzip_file.close();
-
+	__unzip_file.close();
 	return ret;
 }
 
-void xyzip_imp::__push_file(path pa)
+void xyzip_imp::__push_file(const directory_entry& file_entry)
 {
-	assert(directory_entry(pa).is_regular_file());
+	assert(file_entry.is_regular_file());
 	assert(__zip_file.is_open());
 	
 	file_head file;
-	file.size = directory_entry(pa).file_size();
-	file.path_len = pa.string().length();
+	file.size = file_entry.file_size();
+	file.path_len = file_entry.path().string().length();
 
 	__zip_file.write((char*)&file, sizeof(file));
-	__zip_file.write(pa.string().c_str(), file.path_len);
+	__zip_file.write(file_entry.path().string().c_str(), file.path_len);
 
 	char buff[BUFF_SIZE] = { 0 };
-	ifstream fin(pa, ios::in | ios::binary);
-
+	ifstream fin(file_entry, ios::in | ios::binary);
 	while (!fin.eof())
 	{
 		fin.read(buff, sizeof(buff));
@@ -74,18 +78,19 @@ void xyzip_imp::__push_file(path pa)
 	__zip_file.flush();
 }
 
-void xyzip_imp::__push_directory(path pa)
+void xyzip_imp::__push_directory(const directory_entry& directory_entry)
 {
-	assert(directory_entry(pa).is_directory());
+	assert(directory_entry.is_directory());
 	assert(__zip_file.is_open());
 
-	for (auto& file : directory_iterator(pa))
+	for (auto& path_entry : directory_iterator(directory_entry))
 	{
-		if (file.is_directory())
-			__push_directory(file);
-
-		if (file.is_regular_file())
-			__push_file(file);
+		if (path_entry.is_directory())
+			__push_directory(path_entry);
+		else if (path_entry.is_regular_file())
+			__push_file(path_entry);
+		else
+			assert(0);
 	}
 }
 

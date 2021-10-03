@@ -10,12 +10,12 @@ struct file_head
 class xyzip_imp
 {
 public:
-	bool zip(const char* path);
-	bool unzip(const char* path);
+	bool zip(const char*, const char*);
+	bool unzip(const char*, const char*);
 
 private:
-	void __push_file(path);
-	void __push_directory(path);
+	void __push_file(const directory_entry&);
+	void __push_directory(const directory_entry&);
 	bool __pop_file();
 
 	ofstream __zip_file;
