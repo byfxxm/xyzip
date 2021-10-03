@@ -10,5 +10,12 @@
 #include "framework.h"
 #include <filesystem>
 #include <iostream>
+#include <fstream>
+#include <cassert>
+
+#define EXTENSION L".xyzip"
+#define ZIP_HEAD "head"
+#define ZIP_TAIL "tail"
 
 using namespace std;
+using namespace filesystem;
