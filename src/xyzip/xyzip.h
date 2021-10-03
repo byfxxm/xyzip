@@ -11,8 +11,8 @@ extern "C"
 {
 #endif
 
-	XYZIP_AIP bool zip(const char* path);
-	XYZIP_AIP bool unzip(const char* path);
+	XYZIP_AIP bool xy_zip(const char* path);
+	XYZIP_AIP bool xy_unzip(const char* path);
 
 #ifdef __cplusplus
 }

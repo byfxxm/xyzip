@@ -32,18 +32,17 @@ void xyzip_imp::__push_file(path pa)
 	assert(directory_entry(pa).is_regular_file());
 	assert(__zip_file.is_open());
 	
-	__zip_file << ZIP_HEAD;
-	__zip_file << pa;
+	__zip_file << setw(8) << HEAD_TAG << directory_entry(pa).file_size();
 
 	char buff[1024] = { 0 };
 	ifstream fin(pa, ios::in | ios::binary);
+
 	while (!fin.eof())
 	{
 		fin.read(buff, sizeof(buff));
 		__zip_file.write(buff, fin.gcount());
 	}
 
-	__zip_file << ZIP_TAIL;
 	__zip_file.flush();
 }
 

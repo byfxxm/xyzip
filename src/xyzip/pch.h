@@ -12,10 +12,10 @@
 #include <iostream>
 #include <fstream>
 #include <cassert>
+#include <variant>
 
 #define EXTENSION L".xyzip"
-#define ZIP_HEAD "head"
-#define ZIP_TAIL "tail"
+#define HEAD_TAG "xyzip"
 
 using namespace std;
 using namespace filesystem;

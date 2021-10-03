@@ -12,6 +12,6 @@
 
 int main()
 {
-    zip("F:\\VSProject\\xyzip\\src\\test_rc");
+    xy_zip("F:\\VSProject\\xyzip\\src\\test_rc");
     std::cout << "Hello World!\n";
 }

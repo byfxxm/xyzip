@@ -8,12 +8,12 @@ inline xyzip_imp& instance()
 	return inst;
 }
 
-bool zip(const char* path)
+bool xy_zip(const char* path)
 {
 	return instance().zip(path);
 }
 
-bool unzip(const char* path)
+bool xy_unzip(const char* path)
 {
 	return instance().unzip(path);
 }

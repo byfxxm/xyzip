@@ -1,5 +1,13 @@
 #pragma once
 
+struct file_head
+{
+	using ull = unsigned long long;
+
+	char tag[8] = HEAD_TAG;
+	ull size;
+};
+
 class xyzip_imp
 {
 public:
