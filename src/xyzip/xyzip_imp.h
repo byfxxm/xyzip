@@ -2,10 +2,9 @@
 
 struct file_head
 {
-	using ull = unsigned long long;
-
 	char tag[8] = HEAD_TAG;
-	ull size;
+	long long size = 0;
+	int path_len = 0;
 };
 
 class xyzip_imp
@@ -17,7 +16,8 @@ public:
 private:
 	void __push_file(path);
 	void __push_directory(path);
+	bool __pop_file(file_head&);
 
-	directory_entry __zip_entry;
 	ofstream __zip_file;
+	ifstream __unzip_file;
 };

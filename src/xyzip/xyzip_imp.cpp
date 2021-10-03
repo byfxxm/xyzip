@@ -3,17 +3,17 @@
 
 bool xyzip_imp::zip(const char* path)
 {
-	directory_entry __zip_entry(path);
+	directory_entry entry(path);
 
-	if (!__zip_entry.exists())
+	if (!entry.exists())
 		return false;
 
-	auto pa = __zip_entry.path();
+	auto pa = entry.path();
 	__zip_file.open(pa.parent_path().wstring() + L"\\" + pa.filename().wstring() + EXTENSION, ios::out | ios::binary);
 
-	if (__zip_entry.is_directory())
+	if (entry.is_directory())
 		__push_directory(path);
-	else if (__zip_entry.is_regular_file())
+	else if (entry.is_regular_file())
 		__push_file(path);
 
 	if (__zip_file.is_open())
@@ -24,7 +24,33 @@ bool xyzip_imp::zip(const char* path)
 
 bool xyzip_imp::unzip(const char* path)
 {
-	return true;
+	directory_entry entry(path);
+
+	if (!entry.exists())
+		return false;
+
+	bool ret = true;
+
+	try
+	{
+		__unzip_file.open(path, ios::in | ios::binary);
+
+		file_head head;
+		while (__pop_file(head))
+		{
+
+		}
+	}
+	catch (exception ex)
+	{
+		cout << ex.what() << endl;
+		ret = false;
+	}
+
+	if (__unzip_file.is_open())
+		__unzip_file.close();
+
+	return ret;
 }
 
 void xyzip_imp::__push_file(path pa)
@@ -32,7 +58,15 @@ void xyzip_imp::__push_file(path pa)
 	assert(directory_entry(pa).is_regular_file());
 	assert(__zip_file.is_open());
 	
-	__zip_file << setw(8) << HEAD_TAG << directory_entry(pa).file_size();
+	file_head head;
+	head.size = directory_entry(pa).file_size();
+	head.path_len = pa.wstring().length();
+
+	//__zip_file << setw(sizeof(file_head::tag)) << HEAD_TAG;
+	//__zip_file << setw(sizeof(file_head::size)) << directory_entry(pa).file_size();
+	//__zip_file << setw(sizeof(file_head::path_len)) << pa.wstring().length();
+	//__zip_file << setw(sizeof(file_head)) << &head;
+	__zip_file.write((char*)&head, sizeof(head));
 
 	char buff[1024] = { 0 };
 	ifstream fin(pa, ios::in | ios::binary);
@@ -59,4 +93,25 @@ void xyzip_imp::__push_directory(path pa)
 		if (file.is_regular_file())
 			__push_file(file);
 	}
+}
+
+bool xyzip_imp::__pop_file(file_head& file)
+{
+	if (__unzip_file.eof())
+		return false;
+
+	__unzip_file >> setw(sizeof(file_head::tag)) >> file.tag >> file.size;
+
+	//ifstream fin();
+	auto left = file.size;
+	char buff[1024] = { 0 };
+	for (auto left = file.size; left; left -= __unzip_file.gcount())
+	{
+		__unzip_file.read(buff, min(sizeof(buff), left));
+
+		if (left < __unzip_file.gcount())
+			throw exception("file error");
+	}
+
+	return true;
 }
