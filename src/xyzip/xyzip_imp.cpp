@@ -25,13 +25,13 @@ bool xyzip_imp::zip(const char* path)
 bool xyzip_imp::unzip(const char* path)
 {
 	directory_entry entry(path);
-	__unzip_directory = path;
-	__unzip_directory = __unzip_directory.parent_path();
 
-	if (!entry.exists())
+	if (!entry.exists() || !entry.is_regular_file())
 		return false;
 
 	bool ret = true;
+	__unzip_directory = path;
+	__unzip_directory = __unzip_directory.parent_path();
 
 	try
 	{
