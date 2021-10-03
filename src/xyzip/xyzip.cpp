@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "xyzip.h"
 #include "xyzip_imp.h"
 
 inline xyzip_imp& instance()
