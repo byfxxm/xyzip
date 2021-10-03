@@ -12,10 +12,9 @@
 #include <iostream>
 #include <fstream>
 #include <cassert>
-#include <variant>
 
 #define EXTENSION L".xyzip"
-#define HEAD_TAG "xyzip"
+#define BUFF_SIZE 1024
 
 using namespace std;
 using namespace filesystem;

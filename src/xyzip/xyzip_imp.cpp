@@ -35,8 +35,8 @@ bool xyzip_imp::unzip(const char* path)
 	{
 		__unzip_file.open(path, ios::in | ios::binary);
 
-		file_head head;
-		while (__pop_file(head))
+		file_head file;
+		while (__pop_file(file))
 		{
 
 		}
@@ -60,15 +60,12 @@ void xyzip_imp::__push_file(path pa)
 	
 	file_head head;
 	head.size = directory_entry(pa).file_size();
-	head.path_len = pa.wstring().length();
+	head.path_len = pa.string().length();
 
-	//__zip_file << setw(sizeof(file_head::tag)) << HEAD_TAG;
-	//__zip_file << setw(sizeof(file_head::size)) << directory_entry(pa).file_size();
-	//__zip_file << setw(sizeof(file_head::path_len)) << pa.wstring().length();
-	//__zip_file << setw(sizeof(file_head)) << &head;
 	__zip_file.write((char*)&head, sizeof(head));
+	__zip_file.write(pa.string().c_str(), head.path_len);
 
-	char buff[1024] = { 0 };
+	char buff[BUFF_SIZE] = { 0 };
 	ifstream fin(pa, ios::in | ios::binary);
 
 	while (!fin.eof())

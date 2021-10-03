@@ -2,7 +2,7 @@
 
 struct file_head
 {
-	char tag[8] = HEAD_TAG;
+	unsigned long long tag = 0xFABCBCDCDADABABC;
 	long long size = 0;
 	int path_len = 0;
 };
