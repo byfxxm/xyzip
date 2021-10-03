@@ -25,7 +25,8 @@ bool xyzip_imp::zip(const char* path)
 bool xyzip_imp::unzip(const char* path)
 {
 	directory_entry entry(path);
-	__unzip_file_size = entry.file_size();
+	__unzip_directory = path;
+	__unzip_directory = __unzip_directory.parent_path();
 
 	if (!entry.exists())
 		return false;
@@ -98,7 +99,7 @@ bool xyzip_imp::__pop_file()
 
 	char pa[MAX_PATH] = { 0 };
 	__unzip_file.read(pa, file.path_len);
-	ofstream fout(path(pa).filename(), ios::out | ios::binary);
+	ofstream fout(__unzip_directory.wstring() + L"\\" + path(pa).filename().wstring(), ios::out | ios::binary);
 
 	auto left = file.size;
 	char buff[1024] = { 0 };
