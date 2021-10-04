@@ -7,6 +7,12 @@ struct file_head
 	int path_len = 0;
 };
 
+struct rle_head
+{
+	unsigned tag = RLE_TAG;
+	unsigned count = 0;
+};
+
 class xyzip_imp
 {
 public:
@@ -17,6 +23,9 @@ private:
 	void __push_file(const directory_entry&);
 	void __push_directory(const directory_entry&);
 	bool __pop_file();
+
+	static streamsize __encode_read(ifstream&, char*, streamsize);
+	static streamsize __decode_read(ifstream&, char*, streamsize);
 
 	ofstream __zip_file;
 	path __zip_file_dest;

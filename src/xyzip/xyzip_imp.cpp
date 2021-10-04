@@ -75,8 +75,7 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	ifstream fin(file_entry, ios::in | ios::binary);
 	while (!fin.eof())
 	{
-		fin.read(buff, sizeof(buff));
-		__zip_file.write(buff, fin.gcount());
+		__zip_file.write(buff, __encode_read(fin, buff, sizeof(buff)));
 	}
 
 	__zip_file.flush();
@@ -114,12 +113,26 @@ bool xyzip_imp::__pop_file()
 	char buff[1024] = { 0 };
 	for (auto left = file_h.file_len; left; left -= __unzip_file.gcount())
 	{
-		__unzip_file.read(buff, min(sizeof(buff), left));
-		fout.write(buff, __unzip_file.gcount());
-
-		if (left < (decltype(left))__unzip_file.gcount())
-			throw exception("file error");
+		fout.write(buff, __decode_read(__unzip_file, buff, min(sizeof(buff), (unsigned)left)));
 	}
 
 	return true;
+}
+
+streamsize xyzip_imp::__encode_read(ifstream& fin, char* buff, streamsize count)
+{
+	if (!fin.is_open())
+		return 0;
+
+	fin.read(buff, count);
+	return fin.gcount();
+}
+
+streamsize xyzip_imp::__decode_read(ifstream& fin, char* buff, streamsize count)
+{
+	if (!fin.is_open())
+		return 0;
+
+	fin.read(buff, count);
+	return fin.gcount();
 }
