@@ -39,7 +39,7 @@ bool xyzip_imp::unzip(const char* file, const char* directory)
 		return false;
 
 	bool ret = true;
-	__unzip_directory = file_entry.path().parent_path();
+	__unzip_directory = directory;
 
 	try
 	{
