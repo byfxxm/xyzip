@@ -15,6 +15,7 @@
 
 #define EXTENSION L".xyzip"
 #define BUFF_SIZE 1024
+#define FILE_TAG 0xFABCBCDCDADABABC
 
 using namespace std;
 using namespace filesystem;

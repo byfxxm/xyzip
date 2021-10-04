@@ -64,12 +64,12 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	if (file_entry.path() == __zip_file_dest)
 		return;
 	
-	file_head fh;
-	fh.file_len = file_entry.file_size();
-	fh.path_len = file_entry.path().string().length();
+	file_head file_h;
+	file_h.file_len = file_entry.file_size();
+	file_h.path_len = file_entry.path().string().length();
 
-	__zip_file.write((char*)&fh, sizeof(fh));
-	__zip_file.write(file_entry.path().string().c_str(), fh.path_len);
+	__zip_file.write((char*)&file_h, sizeof(file_h));
+	__zip_file.write(file_entry.path().string().c_str(), file_h.path_len);
 
 	char buff[BUFF_SIZE] = { 0 };
 	ifstream fin(file_entry, ios::in | ios::binary);
@@ -103,16 +103,16 @@ bool xyzip_imp::__pop_file()
 	if (__unzip_file.eof())
 		return false;
 
-	file_head file;
-	__unzip_file.read((char*)&file, sizeof(file_head));
+	file_head file_h;
+	__unzip_file.read((char*)&file_h, sizeof(file_head));
 
 	char pa[MAX_PATH] = { 0 };
-	__unzip_file.read(pa, file.path_len);
+	__unzip_file.read(pa, file_h.path_len);
 	ofstream fout(__unzip_dir_dest.wstring() + L"\\" + path(pa).filename().wstring(), ios::out | ios::binary);
 
-	auto left = file.file_len;
+	auto left = file_h.file_len;
 	char buff[1024] = { 0 };
-	for (auto left = file.file_len; left; left -= __unzip_file.gcount())
+	for (auto left = file_h.file_len; left; left -= __unzip_file.gcount())
 	{
 		__unzip_file.read(buff, min(sizeof(buff), left));
 		fout.write(buff, __unzip_file.gcount());
