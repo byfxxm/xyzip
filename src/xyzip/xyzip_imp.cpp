@@ -4,15 +4,15 @@
 bool xyzip_imp::zip(const char* path, const char* directory)
 {
 	directory_entry path_entry(path);
-	directory_entry directory_entry(directory);
+	directory_entry dir_entry(directory);
 
 	if ((!path_entry.is_regular_file() && !path_entry.is_directory()))
 		return false;
 
-	if (!directory_entry.is_directory() && !create_directory(directory_entry))
+	if (!dir_entry.is_directory() && !create_directory(dir_entry))
 		return false;
 
-	__zip_file_dest = directory_entry.path().wstring() + L"\\" + path_entry.path().filename().wstring() + EXTENSION;
+	__zip_file_dest = dir_entry.path().wstring() + L"\\" + path_entry.path().filename().wstring() + EXTENSION;
 	__zip_file.open(__zip_file_dest, ios::out | ios::binary | ios::trunc);
 	{
 		if (path_entry.is_directory())
@@ -30,12 +30,12 @@ bool xyzip_imp::zip(const char* path, const char* directory)
 bool xyzip_imp::unzip(const char* file, const char* directory)
 {
 	directory_entry file_entry(file);
-	directory_entry directory_entry(directory);
+	directory_entry dir_entry(directory);
 
 	if (!file_entry.is_regular_file())
 		return false;
 
-	if (!directory_entry.is_directory() && !create_directory(directory_entry))
+	if (!dir_entry.is_directory() && !create_directory(dir_entry))
 		return false;
 
 	bool ret = true;
