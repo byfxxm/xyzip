@@ -30,6 +30,7 @@ private:
 
 	ofstream __zip_file;
 	path __zip_file_dest;
+	path __zip_root;
 	ifstream __unzip_file;
 	path __unzip_dir_dest;
 };

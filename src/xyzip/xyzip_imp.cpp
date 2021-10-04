@@ -16,9 +16,15 @@ bool xyzip_imp::zip(const char* path, const char* directory)
 	__zip_file.open(__zip_file_dest, ios::out | ios::binary | ios::trunc);
 	{
 		if (path_entry.is_directory())
+		{
+			__zip_root = path_entry;
 			__push_directory(path_entry);
+		}
 		else if (path_entry.is_regular_file())
+		{
+			__zip_root = path_entry.path().parent_path();
 			__push_file(path_entry);
+		}
 		else
 			assert(0);
 	}
@@ -66,10 +72,12 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	
 	file_head file_h;
 	file_h.file_len = file_entry.file_size();
-	file_h.path_len = file_entry.path().string().length();
 
-	__zip_file.write((char*)&file_h, sizeof(file_h));
-	__zip_file.write(file_entry.path().string().c_str(), file_h.path_len);
+	string pa = file_entry.path().string().substr(__zip_root.string().length());
+	file_h.path_len = pa.length();
+
+	__zip_file.write(&BYTE_CAST(file_h), sizeof(file_h));
+	__zip_file.write(pa.c_str(), file_h.path_len);
 
 	ifstream fin(file_entry, ios::in | ios::binary);
 	__encode_file(fin, __zip_file);
@@ -104,10 +112,14 @@ bool xyzip_imp::__pop_file()
 	if (file_h.tag != FILE_TAG)
 		throw exception("unzip file error");
 
-	char fpath[MAX_PATH] = { 0 };
-	__unzip_file.read(fpath, file_h.path_len);
-	ofstream fout(__unzip_dir_dest.wstring() + L"\\" + path(fpath).filename().wstring(), ios::out | ios::binary);
+	char pa[MAX_PATH] = { 0 };
+	__unzip_file.read(pa, file_h.path_len);
+	path path_ = __unzip_dir_dest.wstring() + path(pa).wstring();
 
+	if (!exists(path_.parent_path()))
+		create_directories(path_.parent_path());
+
+	ofstream fout(path_, ios::out | ios::binary);
 	__decode_file(__unzip_file, fout, file_h);
 
 	return true;
