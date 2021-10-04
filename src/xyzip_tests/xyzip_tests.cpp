@@ -12,7 +12,7 @@
 
 int main()
 {
-	xy_zip("F:\\VSProject\\xyzip\\src\\xyzip_tests\\test_files\\freegate", "F:\\VSProject\\xyzip\\src\\xyzip_tests\\test_files\\pack");
-	xy_unzip("F:\\VSProject\\xyzip\\src\\xyzip_tests\\test_files\\pack\\freegate.xyzip", "F:\\VSProject\\xyzip\\src\\xyzip_tests\\test_files\\pack");
+	xy_zip("F:\\VSProject\\tests\\freegate", "F:\\VSProject\\tests\\pack");
+	xy_unzip("F:\\VSProject\\tests\\pack\\freegate.xyzip", "F:\\VSProject\\tests\\pack");
 	std::cout << "Hello World!\n";
 }

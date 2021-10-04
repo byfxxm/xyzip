@@ -80,7 +80,7 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	__zip_file.write(pa.c_str(), file_h.path_len);
 
 	ifstream fin(file_entry, ios::in | ios::binary);
-	__encode_file(fin, __zip_file);
+	__compress(fin, __zip_file);
 
 	__zip_file.flush();
 }
@@ -112,20 +112,20 @@ bool xyzip_imp::__pop_file()
 	if (file_h.tag != FILE_TAG)
 		throw exception("unzip file error");
 
-	char pa[MAX_PATH] = { 0 };
-	__unzip_file.read(pa, file_h.path_len);
-	path path_ = __unzip_dir_dest.wstring() + path(pa).wstring();
+	char buff[MAX_PATH] = { 0 };
+	__unzip_file.read(buff, file_h.path_len);
+	path path_ = __unzip_dir_dest.wstring() + path(buff).wstring();
 
 	if (!exists(path_.parent_path()))
 		create_directories(path_.parent_path());
 
 	ofstream fout(path_, ios::out | ios::binary);
-	__decode_file(__unzip_file, fout, file_h);
+	__decompress(__unzip_file, fout, file_h);
 
 	return true;
 }
 
-void xyzip_imp::__encode_file(ifstream& fin, ofstream& fout)
+void xyzip_imp::__compress(ifstream& fin, ofstream& fout)
 {
 	assert(fin.is_open() && fout.is_open());
 
@@ -165,7 +165,7 @@ void xyzip_imp::__encode_file(ifstream& fin, ofstream& fout)
 	}
 }
 
-void xyzip_imp::__decode_file(ifstream& fin, ofstream& fout, file_head& file_h)
+void xyzip_imp::__decompress(ifstream& fin, ofstream& fout, file_head& file_h)
 {
 	assert(fin.is_open() && fout.is_open());
 

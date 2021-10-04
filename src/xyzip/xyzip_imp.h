@@ -25,8 +25,8 @@ private:
 	void __push_directory(const directory_entry&);
 	bool __pop_file();
 
-	static void __encode_file(ifstream&, ofstream&);
-	static void __decode_file(ifstream&, ofstream&, file_head&);
+	static void __compress(ifstream&, ofstream&);
+	static void __decompress(ifstream&, ofstream&, file_head&);
 
 	ofstream __zip_file;
 	path __zip_file_dest;
