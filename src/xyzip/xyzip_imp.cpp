@@ -12,8 +12,8 @@ bool xyzip_imp::zip(const char* path, const char* directory)
 	if (!directory_entry.is_directory() && !create_directory(directory_entry))
 		return false;
 
-	__zip_file_path = directory_entry.path().wstring() + L"\\" + path_entry.path().filename().wstring() + EXTENSION;
-	__zip_file.open(__zip_file_path, ios::out | ios::binary);
+	__zip_file_dest = directory_entry.path().wstring() + L"\\" + path_entry.path().filename().wstring() + EXTENSION;
+	__zip_file.open(__zip_file_dest, ios::out | ios::binary);
 	{
 		if (path_entry.is_directory())
 			__push_directory(path_entry);
@@ -39,7 +39,7 @@ bool xyzip_imp::unzip(const char* file, const char* directory)
 		return false;
 
 	bool ret = true;
-	__unzip_dir_path = directory;
+	__unzip_dir_dest = directory;
 
 	try
 	{
@@ -61,11 +61,11 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	assert(file_entry.is_regular_file());
 	assert(__zip_file.is_open());
 
-	if (file_entry.path() == __zip_file_path)
+	if (file_entry.path() == __zip_file_dest)
 		return;
 	
 	file_head fh;
-	fh.size = file_entry.file_size();
+	fh.file_len = file_entry.file_size();
 	fh.path_len = file_entry.path().string().length();
 
 	__zip_file.write((char*)&fh, sizeof(fh));
@@ -108,11 +108,11 @@ bool xyzip_imp::__pop_file()
 
 	char pa[MAX_PATH] = { 0 };
 	__unzip_file.read(pa, file.path_len);
-	ofstream fout(__unzip_dir_path.wstring() + L"\\" + path(pa).filename().wstring(), ios::out | ios::binary);
+	ofstream fout(__unzip_dir_dest.wstring() + L"\\" + path(pa).filename().wstring(), ios::out | ios::binary);
 
-	auto left = file.size;
+	auto left = file.file_len;
 	char buff[1024] = { 0 };
-	for (auto left = file.size; left; left -= __unzip_file.gcount())
+	for (auto left = file.file_len; left; left -= __unzip_file.gcount())
 	{
 		__unzip_file.read(buff, min(sizeof(buff), left));
 		fout.write(buff, __unzip_file.gcount());

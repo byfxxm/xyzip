@@ -3,7 +3,7 @@
 struct file_head
 {
 	unsigned long long tag = 0xFABCBCDCDADABABC;
-	unsigned long long size = 0;
+	unsigned long long file_len = 0;
 	int path_len = 0;
 };
 
@@ -19,7 +19,7 @@ private:
 	bool __pop_file();
 
 	ofstream __zip_file;
-	path __zip_file_path;
+	path __zip_file_dest;
 	ifstream __unzip_file;
-	path __unzip_dir_path;
+	path __unzip_dir_dest;
 };
