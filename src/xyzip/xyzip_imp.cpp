@@ -12,7 +12,8 @@ bool xyzip_imp::zip(const char* path, const char* directory)
 	if (!directory_entry.is_directory() && !create_directory(directory_entry))
 		return false;
 
-	__zip_file.open(path_entry, ios::out | ios::binary);
+	__zip_file_path = directory_entry.path().wstring() + L"\\" + path_entry.path().filename().wstring() + EXTENSION;
+	__zip_file.open(__zip_file_path, ios::out | ios::binary);
 	{
 		if (path_entry.is_directory())
 			__push_directory(path_entry);
@@ -59,6 +60,9 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 {
 	assert(file_entry.is_regular_file());
 	assert(__zip_file.is_open());
+
+	if (file_entry.path() == __zip_file_path)
+		return;
 	
 	file_head file;
 	file.size = file_entry.file_size();

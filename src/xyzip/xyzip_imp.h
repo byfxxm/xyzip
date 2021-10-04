@@ -19,6 +19,7 @@ private:
 	bool __pop_file();
 
 	ofstream __zip_file;
+	path __zip_file_path;
 	ifstream __unzip_file;
 	path __unzip_directory;
 };
