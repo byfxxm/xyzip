@@ -25,12 +25,15 @@ private:
 	void __push_directory(const directory_entry&);
 	bool __pop_file();
 
-	static void __compress(ifstream&, ofstream&);
-	static void __decompress(ifstream&, ofstream&, file_head&);
+	void __compress(ofstream&, ifstream&) const;
+	void __decompress(ofstream&, ifstream&, file_head&) const;
+	void __encode_write(ofstream&, const char*, streamsize = step) const;
+	void __decode_read(ifstream&, char*, streamsize = step) const;
 
 	ofstream __zip_file;
 	path __zip_file_dest;
 	path __zip_root;
 	ifstream __unzip_file;
 	path __unzip_dir_dest;
+	unsigned key = 0x12345678;
 };

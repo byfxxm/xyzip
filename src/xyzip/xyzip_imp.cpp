@@ -80,7 +80,7 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	__zip_file.write(pa.c_str(), file_h.path_len);
 
 	ifstream fin(file_entry, ios::in | ios::binary);
-	__compress(fin, __zip_file);
+	__compress(__zip_file, fin);
 
 	__zip_file.flush();
 }
@@ -120,27 +120,27 @@ bool xyzip_imp::__pop_file()
 		create_directories(path_.parent_path());
 
 	ofstream fout(path_, ios::out | ios::binary);
-	__decompress(__unzip_file, fout, file_h);
+	__decompress(fout, __unzip_file, file_h);
 
 	return true;
 }
 
-void xyzip_imp::__compress(ifstream& fin, ofstream& fout)
+void xyzip_imp::__compress(ofstream& fout, ifstream& fin) const
 {
 	assert(fin.is_open() && fout.is_open());
 
-	auto write_rle = [](ofstream& fout, const rle_head& rle_h)
+	auto write_rle = [this](ofstream& fout, const rle_head& rle_h)
 	{
 		if (rle_h.count == 0)
 			return;
 
 		if (rle_h.count > 1)
 		{
-			fout.write(&BYTE_CAST(rle_h.tag), step);
-			fout.write(&BYTE_CAST(rle_h.count), step);
+			__encode_write(fout, &BYTE_CAST(rle_h.tag));
+			__encode_write(fout, &BYTE_CAST(rle_h.count));
 		}
 
-		fout.write(&BYTE_CAST(rle_h.data), step);
+		__encode_write(fout, &BYTE_CAST(rle_h.data));
 	};
 
 	rle_head rle_h;
@@ -153,7 +153,7 @@ void xyzip_imp::__compress(ifstream& fin, ofstream& fout)
 		if (fin.eof())
 		{
 			write_rle(fout, rle_h);
-			fout.write(&BYTE_CAST(input), fin.gcount());
+			__encode_write(fout, &BYTE_CAST(input), fin.gcount());
 			break;
 		}
 
@@ -165,7 +165,7 @@ void xyzip_imp::__compress(ifstream& fin, ofstream& fout)
 	}
 }
 
-void xyzip_imp::__decompress(ifstream& fin, ofstream& fout, file_head& file_h)
+void xyzip_imp::__decompress(ofstream& fout, ifstream& fin, file_head& file_h) const
 {
 	assert(fin.is_open() && fout.is_open());
 
@@ -175,7 +175,7 @@ void xyzip_imp::__decompress(ifstream& fin, ofstream& fout, file_head& file_h)
 
 	while (left >= step)
 	{
-		fin.read(&BYTE_CAST(input), step);
+		__decode_read(fin, &BYTE_CAST(input));
 
 		if (input != RLE_TAG)
 		{
@@ -184,8 +184,8 @@ void xyzip_imp::__decompress(ifstream& fin, ofstream& fout, file_head& file_h)
 			continue;
 		}
 
-		fin.read(&BYTE_CAST(rle_h.count), step);
-		fin.read(&BYTE_CAST(rle_h.data), step);
+		__decode_read(fin, &BYTE_CAST(rle_h.count));
+		__decode_read(fin, &BYTE_CAST(rle_h.data));
 
 		for (unsigned i = 0; i < rle_h.count; ++i)
 		{
@@ -195,6 +195,28 @@ void xyzip_imp::__decompress(ifstream& fin, ofstream& fout, file_head& file_h)
 		left -= (decltype(left))step * rle_h.count;
 	}
 
-	fin.read(&BYTE_CAST(input), left);
+	__decode_read(fin, &BYTE_CAST(input), left);
 	fout.write(&BYTE_CAST(input), left);
+}
+
+void xyzip_imp::__encode_write(ofstream& fout, const char* str, streamsize count) const
+{
+	assert(count <= step);
+	unsigned code = UINT_CAST(*str);
+
+	if (count == step)
+		code = ~code + key;
+
+	fout.write(&BYTE_CAST(code), count);
+}
+
+void xyzip_imp::__decode_read(ifstream& fin, char* str, streamsize count) const
+{
+	assert(count <= step);
+
+	unsigned& code = UINT_CAST(*str);
+	fin.read(&BYTE_CAST(code), count);
+
+	if (count == step)
+		code = ~(code - key);
 }

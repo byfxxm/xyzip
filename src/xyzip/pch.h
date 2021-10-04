@@ -19,8 +19,9 @@
 #define FILE_TAG 0xFABCBCDCDADABABC
 #define RLE_TAG 0xFFABCBCD
 #define BYTE_CAST(var) (*(char*)&(var))
-
-constexpr unsigned step = sizeof(unsigned);
+#define UINT_CAST(var) (*(unsigned*)&(var))
 
 using namespace std;
 using namespace filesystem;
+
+constexpr unsigned step = sizeof(unsigned);
