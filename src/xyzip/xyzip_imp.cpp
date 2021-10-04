@@ -13,7 +13,7 @@ bool xyzip_imp::zip(const char* path, const char* directory)
 		return false;
 
 	__zip_file_dest = directory_entry.path().wstring() + L"\\" + path_entry.path().filename().wstring() + EXTENSION;
-	__zip_file.open(__zip_file_dest, ios::out | ios::binary);
+	__zip_file.open(__zip_file_dest, ios::out | ios::binary | ios::trunc);
 	{
 		if (path_entry.is_directory())
 			__push_directory(path_entry);
