@@ -21,5 +21,5 @@ private:
 	ofstream __zip_file;
 	path __zip_file_path;
 	ifstream __unzip_file;
-	path __unzip_directory;
+	path __unzip_dir_path;
 };
