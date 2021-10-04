@@ -82,12 +82,12 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	__zip_file.flush();
 }
 
-void xyzip_imp::__push_directory(const directory_entry& directory_entry)
+void xyzip_imp::__push_directory(const directory_entry& dir_entry)
 {
-	assert(directory_entry.is_directory());
+	assert(dir_entry.is_directory());
 	assert(__zip_file.is_open());
 
-	for (auto& path_entry : directory_iterator(directory_entry))
+	for (auto& path_entry : directory_iterator(dir_entry))
 	{
 		if (path_entry.is_directory())
 			__push_directory(path_entry);
