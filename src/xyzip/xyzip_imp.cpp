@@ -97,7 +97,7 @@ bool xyzip_imp::__pop_file()
 {
 	file_head file_h;
 
-	__unzip_file.read((char*)&file_h, sizeof(file_head));
+	__unzip_file.read(&BYTE_CAST(file_h), sizeof(file_head));
 	if (__unzip_file.eof())
 		return false;
 
@@ -117,7 +117,7 @@ void xyzip_imp::__encode_file(ifstream& fin, ofstream& fout)
 {
 	assert(fin.is_open() && fout.is_open());
 
-	auto write_rle = [](ofstream& fout, const rle_head& rle_h, streamsize gcount = step)
+	auto write_rle = [](ofstream& fout, const rle_head& rle_h)
 	{
 		if (rle_h.count == 0)
 			return;
@@ -128,21 +128,21 @@ void xyzip_imp::__encode_file(ifstream& fin, ofstream& fout)
 			fout.write(&BYTE_CAST(rle_h.count), step);
 		}
 
-		fout.write(&BYTE_CAST(rle_h.data), gcount);
+		fout.write(&BYTE_CAST(rle_h.data), step);
 	};
 
 	rle_head rle_h;
 	unsigned input = 0;
 
-	for (; !fin.eof(); ++rle_h.count, rle_h.data = input)
+	for (; ; ++rle_h.count, rle_h.data = input)
 	{
 		fin.read(&BYTE_CAST(input), step);
 
-		if (fin.gcount() != step)
+		if (fin.eof())
 		{
 			write_rle(fout, rle_h);
-			rle_h.count = 0;
-			continue;
+			fout.write(&BYTE_CAST(input), fin.gcount());
+			break;
 		}
 
 		if (input == rle_h.data || rle_h.count == 0)
@@ -151,8 +151,6 @@ void xyzip_imp::__encode_file(ifstream& fin, ofstream& fout)
 		write_rle(fout, rle_h);
 		rle_h.count = 0;
 	}
-
-	write_rle(fout, rle_h, fin.gcount());
 }
 
 void xyzip_imp::__decode_file(ifstream& fin, ofstream& fout, file_head& file_h)
