@@ -71,12 +71,8 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	__zip_file.write((char*)&file_h, sizeof(file_h));
 	__zip_file.write(file_entry.path().string().c_str(), file_h.path_len);
 
-	char buff[BUFF_SIZE] = { 0 };
 	ifstream fin(file_entry, ios::in | ios::binary);
-	while (!fin.eof())
-	{
-		__zip_file.write(buff, __encode_read(fin, buff, sizeof(buff)));
-	}
+	__encode_file(fin, __zip_file);
 
 	__zip_file.flush();
 }
@@ -99,42 +95,96 @@ void xyzip_imp::__push_directory(const directory_entry& dir_entry)
 
 bool xyzip_imp::__pop_file()
 {
+	file_head file_h;
+
+	__unzip_file.read((char*)&file_h, sizeof(file_head));
 	if (__unzip_file.eof())
 		return false;
 
-	file_head file_h;
-	__unzip_file.read((char*)&file_h, sizeof(file_head));
+	if (file_h.tag != FILE_TAG)
+		throw exception("unzip file error");
 
-	char pa[MAX_PATH] = { 0 };
-	__unzip_file.read(pa, file_h.path_len);
-	ofstream fout(__unzip_dir_dest.wstring() + L"\\" + path(pa).filename().wstring(), ios::out | ios::binary);
+	char fpath[MAX_PATH] = { 0 };
+	__unzip_file.read(fpath, file_h.path_len);
+	ofstream fout(__unzip_dir_dest.wstring() + L"\\" + path(fpath).filename().wstring(), ios::out | ios::binary);
 
-	auto left = file_h.file_len;
-	char buff[BUFF_SIZE] = { 0 };
-	while (left)
-	{
-		auto count = __decode_read(__unzip_file, buff, min(sizeof(buff), (unsigned)left));
-		fout.write(buff, count);
-		left -= count;
-	}
+	__decode_file(__unzip_file, fout, file_h);
 
 	return true;
 }
 
-streamsize xyzip_imp::__encode_read(ifstream& fin, char* buff, streamsize count)
+void xyzip_imp::__encode_file(ifstream& fin, ofstream& fout)
 {
-	if (!fin.is_open())
-		return 0;
+	assert(fin.is_open() && fout.is_open());
 
-	fin.read(buff, count);
-	return fin.gcount();
+	auto write_rle = [](ofstream& fout, const rle_head& rle_h, streamsize gcount = step)
+	{
+		if (rle_h.count == 0)
+			return;
+
+		if (rle_h.count > 1)
+		{
+			fout.write(&BYTE_CAST(rle_h.tag), step);
+			fout.write(&BYTE_CAST(rle_h.count), step);
+		}
+
+		fout.write(&BYTE_CAST(rle_h.data), gcount);
+	};
+
+	rle_head rle_h;
+	unsigned input = 0;
+
+	for (; !fin.eof(); ++rle_h.count, rle_h.data = input)
+	{
+		fin.read(&BYTE_CAST(input), step);
+
+		if (fin.gcount() != step)
+		{
+			write_rle(fout, rle_h);
+			rle_h.count = 0;
+			continue;
+		}
+
+		if (input == rle_h.data || rle_h.count == 0)
+			continue;
+
+		write_rle(fout, rle_h);
+		rle_h.count = 0;
+	}
+
+	write_rle(fout, rle_h, fin.gcount());
 }
 
-streamsize xyzip_imp::__decode_read(ifstream& fin, char* buff, streamsize count)
+void xyzip_imp::__decode_file(ifstream& fin, ofstream& fout, file_head& file_h)
 {
-	if (!fin.is_open())
-		return 0;
+	assert(fin.is_open() && fout.is_open());
 
-	fin.read(buff, count);
-	return fin.gcount();
+	rle_head rle_h;
+	unsigned input = 0;
+	auto left = file_h.file_len;
+
+	while (left >= step)
+	{
+		fin.read(&BYTE_CAST(input), step);
+
+		if (input != RLE_TAG)
+		{
+			fout.write(&BYTE_CAST(input), step);
+			left -= fin.gcount();
+			continue;
+		}
+
+		fin.read(&BYTE_CAST(rle_h.count), step);
+		fin.read(&BYTE_CAST(rle_h.data), step);
+
+		for (unsigned i = 0; i < rle_h.count; ++i)
+		{
+			fout.write(&BYTE_CAST(rle_h.data), step);
+		}
+
+		left -= (decltype(left))step * rle_h.count;
+	}
+
+	fin.read(&BYTE_CAST(input), left);
+	fout.write(&BYTE_CAST(input), left);
 }
