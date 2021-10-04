@@ -110,10 +110,12 @@ bool xyzip_imp::__pop_file()
 	ofstream fout(__unzip_dir_dest.wstring() + L"\\" + path(pa).filename().wstring(), ios::out | ios::binary);
 
 	auto left = file_h.file_len;
-	char buff[1024] = { 0 };
-	for (auto left = file_h.file_len; left; left -= __unzip_file.gcount())
+	char buff[BUFF_SIZE] = { 0 };
+	while (left)
 	{
-		fout.write(buff, __decode_read(__unzip_file, buff, min(sizeof(buff), (unsigned)left)));
+		auto count = __decode_read(__unzip_file, buff, min(sizeof(buff), (unsigned)left));
+		fout.write(buff, count);
+		left -= count;
 	}
 
 	return true;
