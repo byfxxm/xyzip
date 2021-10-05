@@ -30,8 +30,8 @@ private:
 	void __decompress(ifstream&, ofstream&, file_head&) const;
 	void __encode_write(ofstream&, const char*, streamsize = STEP) const;
 	void __decode_read(ifstream&, char*, streamsize = STEP) const;
-	unsigned __encrypt(unsigned) const;
-	unsigned __decrypt(unsigned) const;
+	unsigned __encrypt(unsigned, unsigned = LEVEL) const;
+	unsigned __decrypt(unsigned, unsigned = LEVEL) const;
 
 	ofstream __zip_file;
 	path __zip_file_dest;
