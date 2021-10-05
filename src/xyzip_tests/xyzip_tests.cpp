@@ -17,6 +17,14 @@ using namespace std;
 
 int main()
 {
+#if 1
+	filesystem::remove_all("F:\\VSProject\\tests\\pack");
+	xy_setk('nike');
+	xy_zip("F:\\VSProject\\tests\\pics", "F:\\VSProject\\tests\\pack");
+	cout << "zipped" << endl;
+	xy_unzip("F:\\VSProject\\tests\\pack\\pics.xyzip", "F:\\VSProject\\tests\\pack");
+	cout << "unzipped" << endl;
+#else
 	string s1, s2, s3;
 
 	while (1)
@@ -76,6 +84,7 @@ int main()
 			cout << "input error!" << endl;
 		}
 	}
+#endif
 
 	return 0;
 }
