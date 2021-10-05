@@ -24,47 +24,56 @@ int main()
 		cout << "(1)zip or (2)unzip: ";
 		cin >> s1;
 
-		if (std::stoi(s1) == 1)
+		try
 		{
-			do
+			if (std::stoi(s1) == 1)
 			{
-				cout << "input source directory: ";
-				cin >> s1;
-			} while (!filesystem::is_directory(s1) && !filesystem::is_regular_file(s1));
+				do
+				{
+					cout << "input source directory: ";
+					cin >> s1;
+				} while (!filesystem::is_directory(s1) && !filesystem::is_regular_file(s1));
 
-			do
+				do
+				{
+					cout << "input dest directory: ";
+					cin >> s2;
+				} while (!filesystem::is_directory(s2));
+
+				cout << "input key: ";
+				cin >> s3;
+				if (!s3.empty())
+					xy_setk(*(unsigned*)s3.c_str());
+
+				auto res = xy_zip(s1.c_str(), s2.c_str());
+				cout << (res ? "zip success!" : "zip fail!") << endl;
+			}
+			else if (std::stoi(s1) == 2)
 			{
-				cout << "input dest directory: ";
-				cin >> s2;
-			} while (!filesystem::is_directory(s2));
+				do
+				{
+					cout << "input source file: ";
+					cin >> s1;
+				} while (!filesystem::is_regular_file(s1));
 
-			cout << "input key: ";
-			cin >> s3;
-			xy_setk(*(unsigned*)s3.c_str());
+				do
+				{
+					cout << "input dest directory: ";
+					cin >> s2;
+				} while (!filesystem::is_directory(s2));
 
-			auto res = xy_zip(s1.c_str(), s2.c_str());
-			cout << (res ? "zip success!" : "zip fail!") << endl;
+				cout << "input key: ";
+				cin >> s3;
+				if (!s3.empty())
+					xy_setk(*(unsigned*)s3.c_str());
+
+				auto res = xy_unzip(s1.c_str(), s2.c_str());
+				cout << (res ? "unzip success!" : "unzip fail!") << endl;
+			}
 		}
-		else if (std::stoi(s1) == 2)
+		catch (...)
 		{
-			do
-			{
-				cout << "input source file: ";
-				cin >> s1;
-			} while (!filesystem::is_regular_file(s1));
-
-			do
-			{
-				cout << "input dest directory: ";
-				cin >> s2;
-			} while (!filesystem::is_directory(s2));
-
-			cout << "input key: ";
-			cin >> s3;
-			xy_setk(*(unsigned*)s3.c_str());
-
-			auto res = xy_unzip(s1.c_str(), s2.c_str());
-			cout << (res ? "unzip success!" : "unzip fail!") << endl;
+			cout << "input error!" << endl;
 		}
 	}
 
