@@ -10,10 +10,15 @@
 #pragma comment(lib, "../Release/xyzip.lib")
 #endif
 
+using namespace std;
+
 int main()
 {
 	xy_setk('nice');
 	xy_zip("F:\\VSProject\\tests\\freegate", "F:\\VSProject\\tests\\pack");
+	cout << "packed" << endl;
 	xy_unzip("F:\\VSProject\\tests\\pack\\freegate.xyzip", "F:\\VSProject\\tests\\pack");
-	std::cout << "Hello World!\n";
+	cout << "unpacked" << endl;
+
+	return 0;
 }
