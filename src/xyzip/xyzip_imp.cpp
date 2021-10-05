@@ -193,9 +193,7 @@ void xyzip_imp::__decompress(ifstream& fin, ofstream& fout, file_head& file_h) c
 		__decode_read(fin, &BYTE_CAST(rle_h.data));
 
 		for (unsigned i = 0; i < rle_h.count; ++i)
-		{
 			fout.write(&BYTE_CAST(rle_h.data), STEP);
-		}
 
 		left -= (decltype(left))STEP * rle_h.count;
 	}
