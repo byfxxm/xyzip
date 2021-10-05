@@ -38,5 +38,5 @@ private:
 	path __zip_root;
 	ifstream __unzip_file;
 	path __unzip_dir_dest;
-	unsigned key = 0x12345678;
+	unsigned __key = 0x12345678;
 };

@@ -64,7 +64,7 @@ bool xyzip_imp::unzip(const char* file, const char* directory)
 
 void xyzip_imp::setk(unsigned k)
 {
-	key = k;
+	__key = k;
 }
 
 void xyzip_imp::__push_file(const directory_entry& file_entry)
@@ -233,10 +233,10 @@ void xyzip_imp::__decode_read(ifstream& fin, char* str, streamsize count) const
 
 inline unsigned xyzip_imp::__encrypt(unsigned code) const
 {
-	return ~code + key;
+	return ~code + __key;
 }
 
 inline unsigned xyzip_imp::__decrypt(unsigned code) const
 {
-	return ~(code - key);
+	return ~(code - __key);
 }
