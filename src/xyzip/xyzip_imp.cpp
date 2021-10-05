@@ -210,7 +210,7 @@ void xyzip_imp::__encode_write(ofstream& fout, const char* str, streamsize count
 	unsigned code = UINT_CAST(*str);
 
 	if (count == STEP)
-		code = ~code + key;
+		code = __encrypt(code);
 
 	fout.write(&BYTE_CAST(code), count);
 }
@@ -223,5 +223,15 @@ void xyzip_imp::__decode_read(ifstream& fin, char* str, streamsize count) const
 	fin.read(&BYTE_CAST(code), count);
 
 	if (count == STEP)
-		code = ~(code - key);
+		code = __decrypt(code);
+}
+
+inline unsigned xyzip_imp::__encrypt(unsigned code) const
+{
+	return ~code + key;
+}
+
+inline unsigned xyzip_imp::__decrypt(unsigned code) const
+{
+	return ~(code - key);
 }
