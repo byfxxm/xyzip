@@ -13,6 +13,7 @@ extern "C"
 
 	XYZIP_AIP bool xy_zip(const char* path, const char* directory);
 	XYZIP_AIP bool xy_unzip(const char* file, const char* directory);
+	XYZIP_AIP void xy_setk(unsigned key);
 
 #ifdef __cplusplus
 }

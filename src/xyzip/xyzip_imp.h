@@ -19,6 +19,7 @@ class xyzip_imp
 public:
 	bool zip(const char*, const char*);
 	bool unzip(const char*, const char*);
+	void setk(unsigned);
 
 private:
 	void __push_file(const directory_entry&);
@@ -27,8 +28,8 @@ private:
 
 	void __compress(ofstream&, ifstream&) const;
 	void __decompress(ofstream&, ifstream&, file_head&) const;
-	void __encode_write(ofstream&, const char*, streamsize = step) const;
-	void __decode_read(ifstream&, char*, streamsize = step) const;
+	void __encode_write(ofstream&, const char*, streamsize = STEP) const;
+	void __decode_read(ifstream&, char*, streamsize = STEP) const;
 
 	ofstream __zip_file;
 	path __zip_file_dest;

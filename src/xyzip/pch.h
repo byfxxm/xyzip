@@ -14,14 +14,13 @@
 #include <cassert>
 #include <functional>
 
-#define EXTENSION L".xyzip"
-#define BUFF_SIZE 1024
-#define FILE_TAG 0xFABCBCDCDADABABC
-#define RLE_TAG 0xFFABCBCD
 #define BYTE_CAST(var) (*(char*)&(var))
 #define UINT_CAST(var) (*(unsigned*)&(var))
 
+constexpr auto EXT = L".xyzip";
+constexpr auto FILE_TAG = 0xFABCBCDCDADABABC;
+constexpr auto RLE_TAG = 0xFFABCBCD;
+constexpr auto STEP = sizeof(unsigned);
+
 using namespace std;
 using namespace filesystem;
-
-constexpr unsigned step = sizeof(unsigned);

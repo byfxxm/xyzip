@@ -12,7 +12,7 @@ bool xyzip_imp::zip(const char* path, const char* directory)
 	if (!dir_entry.is_directory() && !create_directory(dir_entry))
 		return false;
 
-	__zip_file_dest = dir_entry.path().wstring() + L"\\" + path_entry.path().filename().wstring() + EXTENSION;
+	__zip_file_dest = dir_entry.path().wstring() + L"\\" + path_entry.path().filename().wstring() + EXT;
 	__zip_file.open(__zip_file_dest, ios::out | ios::binary | ios::trunc);
 	{
 		if (path_entry.is_directory())
@@ -60,6 +60,11 @@ bool xyzip_imp::unzip(const char* file, const char* directory)
 
 	__unzip_file.close();
 	return ret;
+}
+
+void xyzip_imp::setk(unsigned k)
+{
+	key = k;
 }
 
 void xyzip_imp::__push_file(const directory_entry& file_entry)
@@ -148,7 +153,7 @@ void xyzip_imp::__compress(ofstream& fout, ifstream& fin) const
 
 	for (; ; ++rle_h.count, rle_h.data = input)
 	{
-		fin.read(&BYTE_CAST(input), step);
+		fin.read(&BYTE_CAST(input), STEP);
 
 		if (fin.eof())
 		{
@@ -173,13 +178,13 @@ void xyzip_imp::__decompress(ofstream& fout, ifstream& fin, file_head& file_h) c
 	unsigned input = 0;
 	auto left = file_h.file_len;
 
-	while (left >= step)
+	while (left >= STEP)
 	{
 		__decode_read(fin, &BYTE_CAST(input));
 
 		if (input != RLE_TAG)
 		{
-			fout.write(&BYTE_CAST(input), step);
+			fout.write(&BYTE_CAST(input), STEP);
 			left -= fin.gcount();
 			continue;
 		}
@@ -189,10 +194,10 @@ void xyzip_imp::__decompress(ofstream& fout, ifstream& fin, file_head& file_h) c
 
 		for (unsigned i = 0; i < rle_h.count; ++i)
 		{
-			fout.write(&BYTE_CAST(rle_h.data), step);
+			fout.write(&BYTE_CAST(rle_h.data), STEP);
 		}
 
-		left -= (decltype(left))step * rle_h.count;
+		left -= (decltype(left))STEP * rle_h.count;
 	}
 
 	__decode_read(fin, &BYTE_CAST(input), left);
@@ -201,10 +206,10 @@ void xyzip_imp::__decompress(ofstream& fout, ifstream& fin, file_head& file_h) c
 
 void xyzip_imp::__encode_write(ofstream& fout, const char* str, streamsize count) const
 {
-	assert(count <= step);
+	assert(count <= STEP);
 	unsigned code = UINT_CAST(*str);
 
-	if (count == step)
+	if (count == STEP)
 		code = ~code + key;
 
 	fout.write(&BYTE_CAST(code), count);
@@ -212,11 +217,11 @@ void xyzip_imp::__encode_write(ofstream& fout, const char* str, streamsize count
 
 void xyzip_imp::__decode_read(ifstream& fin, char* str, streamsize count) const
 {
-	assert(count <= step);
+	assert(count <= STEP);
 
 	unsigned& code = UINT_CAST(*str);
 	fin.read(&BYTE_CAST(code), count);
 
-	if (count == step)
+	if (count == STEP)
 		code = ~(code - key);
 }
