@@ -224,7 +224,7 @@ void xyzip_imp::__decode_read(ifstream& fin, char* str, streamsize count) const
 
 	for (; idx < count; idx += STEP)
 	{
-		len = min(STEP, count - idx);
+		len = min(STEP, (unsigned)count - idx);
 		fin.read(&BYTE_CAST(code), len);
 		auto temp = __decrypt(code);
 		memcpy(&str[idx], &temp, len);
