@@ -21,7 +21,6 @@ constexpr auto EXT = L".xyzip";
 constexpr auto FILE_TAG = 0xFABCBCDCDADABABC;
 constexpr auto RLE_TAG = 0xFFABCBCD;
 constexpr auto STEP = sizeof(unsigned);
-constexpr auto LEVEL = 5;
 
 using namespace std;
 using namespace filesystem;

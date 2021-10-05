@@ -231,18 +231,12 @@ void xyzip_imp::__decode_read(ifstream& fin, char* str, streamsize count) const
 	}
 }
 
-inline unsigned xyzip_imp::__encrypt(unsigned code, unsigned level) const
+inline unsigned xyzip_imp::__encrypt(unsigned code) const
 {
-	if (level == 0)
-		return code;
-
-	return __encrypt(~code + __key, level - 1);
+	return ~code + __key;
 }
 
-inline unsigned xyzip_imp::__decrypt(unsigned code, unsigned level) const
+inline unsigned xyzip_imp::__decrypt(unsigned code) const
 {
-	if (level == 0)
-		return code;
-
-	return __decrypt(~(code - __key), level - 1);
+	return ~(code - __key);
 }
