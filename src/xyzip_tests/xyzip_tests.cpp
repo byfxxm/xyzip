@@ -13,7 +13,7 @@
 int main()
 {
 	xy_setk('nice');
-	xy_zip("F:\\VSProject\\tests\\pics", "F:\\VSProject\\tests\\pack");
-	xy_unzip("F:\\VSProject\\tests\\pack\\pics.xyzip", "F:\\VSProject\\tests\\pack");
+	xy_zip("F:\\VSProject\\tests\\freegate", "F:\\VSProject\\tests\\pack");
+	xy_unzip("F:\\VSProject\\tests\\pack\\freegate.xyzip", "F:\\VSProject\\tests\\pack");
 	std::cout << "Hello World!\n";
 }

@@ -81,8 +81,8 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	string pa = file_entry.path().string().substr(__zip_root.string().length());
 	file_h.path_len = pa.length();
 
-	__zip_file.write(&BYTE_CAST(file_h), sizeof(file_h));
-	__zip_file.write(pa.c_str(), file_h.path_len);
+	__encode_write(__zip_file, &BYTE_CAST(file_h), sizeof(file_h));
+	__encode_write(__zip_file, pa.c_str(), file_h.path_len);
 
 	ifstream fin(file_entry, ios::in | ios::binary);
 	__compress(__zip_file, fin);
@@ -112,13 +112,13 @@ bool xyzip_imp::__pop_file()
 		return false;
 
 	file_head file_h;
-	__unzip_file.read(&BYTE_CAST(file_h), sizeof(file_head));
+	__decode_read(__unzip_file, &BYTE_CAST(file_h), sizeof(file_head));
 
 	if (file_h.tag != FILE_TAG)
 		throw exception("unzip file error");
 
 	char buff[MAX_PATH] = { 0 };
-	__unzip_file.read(buff, file_h.path_len);
+	__decode_read(__unzip_file, buff, file_h.path_len);
 	path path_ = __unzip_dir_dest.wstring() + path(buff).wstring();
 
 	if (!exists(path_.parent_path()))
@@ -206,24 +206,29 @@ void xyzip_imp::__decompress(ofstream& fout, ifstream& fin, file_head& file_h) c
 
 void xyzip_imp::__encode_write(ofstream& fout, const char* str, streamsize count) const
 {
-	assert(count <= STEP);
-	unsigned code = UINT_CAST(*str);
+	unsigned idx = 0;
+	unsigned code = 0;
 
-	if (count == STEP)
-		code = __encrypt(code);
-
-	fout.write(&BYTE_CAST(code), count);
+	for (; idx < count; idx += STEP)
+	{
+		code = __encrypt(UINT_CAST(str[idx]));
+		fout.write(&BYTE_CAST(code), min(STEP, count - idx));
+	}
 }
 
 void xyzip_imp::__decode_read(ifstream& fin, char* str, streamsize count) const
 {
-	assert(count <= STEP);
+	unsigned idx = 0;
+	unsigned code = 0;
+	unsigned len = 0;
 
-	unsigned& code = UINT_CAST(*str);
-	fin.read(&BYTE_CAST(code), count);
-
-	if (count == STEP)
-		code = __decrypt(code);
+	for (; idx < count; idx += STEP)
+	{
+		len = min(STEP, count - idx);
+		fin.read(&BYTE_CAST(code), len);
+		auto temp = __decrypt(code);
+		memcpy(&str[idx], &temp, len);
+	}
 }
 
 inline unsigned xyzip_imp::__encrypt(unsigned code) const
