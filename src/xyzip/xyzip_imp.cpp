@@ -118,7 +118,7 @@ bool xyzip_imp::__pop_file()
 		return false;
 
 	file_head file_h;
-	__decode_read(__unzip_file, &BYTE_CAST(file_h), sizeof(file_head));
+	__decode_read(__unzip_file, &BYTE_CAST(file_h), sizeof(file_h));
 
 	if (file_h.tag != FILE_TAG)
 		throw exception("unzip file error");

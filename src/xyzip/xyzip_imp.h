@@ -2,9 +2,9 @@
 
 struct file_head
 {
-	unsigned long long tag = FILE_TAG;
+	unsigned tag = FILE_TAG;
+	unsigned path_len = 0;
 	unsigned long long file_len = 0;
-	int path_len = 0;
 };
 
 struct rle_head

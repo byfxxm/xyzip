@@ -18,7 +18,7 @@
 #define UINT_CAST(var) (*(unsigned*)&(var))
 
 constexpr auto EXT = L".xyzip";
-constexpr auto FILE_TAG = 0xFABCBCDCDADABABC;
+constexpr auto FILE_TAG = 0xFABCBCDC;
 constexpr auto RLE_TAG = 0xFFABCBCD;
 constexpr auto STEP = sizeof(unsigned);
 
