@@ -108,11 +108,11 @@ void xyzip_imp::__push_directory(const directory_entry& dir_entry)
 
 bool xyzip_imp::__pop_file()
 {
-	file_head file_h;
-
-	__unzip_file.read(&BYTE_CAST(file_h), sizeof(file_head));
-	if (__unzip_file.eof())
+	if (__unzip_file.peek() == EOF)
 		return false;
+
+	file_head file_h;
+	__unzip_file.read(&BYTE_CAST(file_h), sizeof(file_head));
 
 	if (file_h.tag != FILE_TAG)
 		throw exception("unzip file error");
