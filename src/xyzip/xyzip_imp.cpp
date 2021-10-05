@@ -8,8 +8,8 @@ xyzip_imp::xyzip_imp()
 
 bool xyzip_imp::zip(const char* path, const char* directory)
 {
-	directory_entry path_entry(path);
-	directory_entry dir_entry(directory);
+	directory_entry path_entry(absolute(path));
+	directory_entry dir_entry(absolute(directory));
 
 	if ((!path_entry.is_regular_file() && !path_entry.is_directory()))
 		return false;
@@ -40,8 +40,8 @@ bool xyzip_imp::zip(const char* path, const char* directory)
 
 bool xyzip_imp::unzip(const char* file, const char* directory)
 {
-	directory_entry file_entry(file);
-	directory_entry dir_entry(directory);
+	directory_entry file_entry(absolute(file));
+	directory_entry dir_entry(absolute(directory));
 
 	if (!file_entry.is_regular_file())
 		return false;
@@ -50,7 +50,7 @@ bool xyzip_imp::unzip(const char* file, const char* directory)
 		return false;
 
 	bool ret = true;
-	__unzip_dir_dest = directory;
+	__unzip_dir_dest = dir_entry;
 
 	try
 	{
@@ -84,11 +84,11 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	file_head file_h;
 	file_h.file_len = file_entry.file_size();
 
-	string pa = file_entry.path().string().substr(__zip_root.string().length());
-	file_h.path_len = pa.length();
+	string path_str = file_entry.path().string().substr(__zip_root.string().length());
+	file_h.path_len = path_str.length();
 
 	__encode_write(__zip_file, &BYTE_CAST(file_h), sizeof(file_h));
-	__encode_write(__zip_file, pa.c_str(), file_h.path_len);
+	__encode_write(__zip_file, path_str.c_str(), file_h.path_len);
 
 	ifstream fin(file_entry, ios::in | ios::binary);
 	__compress(fin, __zip_file);
