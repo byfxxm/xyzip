@@ -1,6 +1,11 @@
 #include "pch.h"
 #include "xyzip_imp.h"
 
+xyzip_imp::xyzip_imp()
+{
+	__generate_level();
+}
+
 bool xyzip_imp::zip(const char* path, const char* directory)
 {
 	directory_entry path_entry(path);
@@ -65,6 +70,7 @@ bool xyzip_imp::unzip(const char* file, const char* directory)
 void xyzip_imp::setk(unsigned k)
 {
 	__key = k;
+	__generate_level();
 }
 
 void xyzip_imp::__push_file(const directory_entry& file_entry)
@@ -209,7 +215,7 @@ void xyzip_imp::__encode_write(ofstream& fout, const char* str, streamsize count
 
 	for (; idx < count; idx += STEP)
 	{
-		code = __encrypt(UINT_CAST(str[idx]));
+		code = __encrypt(UINT_CAST(str[idx]), __level);
 		fout.write(&BYTE_CAST(code), min(STEP, count - idx));
 	}
 }
@@ -224,23 +230,35 @@ void xyzip_imp::__decode_read(ifstream& fin, char* str, streamsize count) const
 	{
 		len = min(STEP, (unsigned)count - idx);
 		fin.read(&BYTE_CAST(code), len);
-		auto temp = __decrypt(code);
+		auto temp = __decrypt(code, __level);
 		memcpy(&str[idx], &temp, len);
 	}
 }
 
-inline unsigned xyzip_imp::__encrypt(unsigned code, unsigned level) const
+unsigned xyzip_imp::__encrypt(unsigned code, unsigned level) const
 {
-	if (level == 0)
-		return code;
+	for (unsigned i = 0; i < level; ++i)
+		code = ~code + __key ^ __key;
 
-	return __encrypt(~code + __key ^ __key, level - 1);
+	return code;
 }
 
-inline unsigned xyzip_imp::__decrypt(unsigned code, unsigned level) const
+unsigned xyzip_imp::__decrypt(unsigned code, unsigned level) const
 {
-	if (level == 0)
-		return code;
+	for (unsigned i = 0; i < level; ++i)
+		code = ~(code ^ __key) + __key;
 
-	return __decrypt(~(code ^ __key) + __key, level - 1);
+	return code;
+}
+
+void xyzip_imp::__generate_level()
+{
+	auto key = __key;
+	__level = 0;
+
+	while (key)
+	{
+		__level += key & 0x1;
+		key >>= 1;
+	}
 }

@@ -17,6 +17,7 @@ struct rle_head
 class xyzip_imp
 {
 public:
+	xyzip_imp();
 	bool zip(const char*, const char*);
 	bool unzip(const char*, const char*);
 	void setk(unsigned);
@@ -30,8 +31,9 @@ private:
 	void __decompress(ifstream&, ofstream&, file_head&) const;
 	void __encode_write(ofstream&, const char*, streamsize = STEP) const;
 	void __decode_read(ifstream&, char*, streamsize = STEP) const;
-	unsigned __encrypt(unsigned, unsigned = LEVEL) const;
-	unsigned __decrypt(unsigned, unsigned = LEVEL) const;
+	unsigned __encrypt(unsigned, unsigned) const;
+	unsigned __decrypt(unsigned, unsigned) const;
+	void __generate_level();
 
 	ofstream __zip_file;
 	path __zip_file_dest;
@@ -39,4 +41,5 @@ private:
 	ifstream __unzip_file;
 	path __unzip_dir_dest;
 	unsigned __key = 'xxm';
+	unsigned __level = 0;
 };
