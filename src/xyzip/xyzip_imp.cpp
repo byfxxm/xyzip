@@ -85,7 +85,7 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	__encode_write(__zip_file, pa.c_str(), file_h.path_len);
 
 	ifstream fin(file_entry, ios::in | ios::binary);
-	__compress(__zip_file, fin);
+	__compress(fin, __zip_file);
 
 	__zip_file.flush();
 }
@@ -125,12 +125,12 @@ bool xyzip_imp::__pop_file()
 		create_directories(path_.parent_path());
 
 	ofstream fout(path_, ios::out | ios::binary);
-	__decompress(fout, __unzip_file, file_h);
+	__decompress(__unzip_file, fout, file_h);
 
 	return true;
 }
 
-void xyzip_imp::__compress(ofstream& fout, ifstream& fin) const
+void xyzip_imp::__compress(ifstream& fin, ofstream& fout) const
 {
 	assert(fin.is_open() && fout.is_open());
 
@@ -170,7 +170,7 @@ void xyzip_imp::__compress(ofstream& fout, ifstream& fin) const
 	}
 }
 
-void xyzip_imp::__decompress(ofstream& fout, ifstream& fin, file_head& file_h) const
+void xyzip_imp::__decompress(ifstream& fin, ofstream& fout, file_head& file_h) const
 {
 	assert(fin.is_open() && fout.is_open());
 

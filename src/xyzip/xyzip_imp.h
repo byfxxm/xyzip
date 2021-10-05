@@ -26,8 +26,8 @@ private:
 	void __push_directory(const directory_entry&);
 	bool __pop_file();
 
-	void __compress(ofstream&, ifstream&) const;
-	void __decompress(ofstream&, ifstream&, file_head&) const;
+	void __compress(ifstream&, ofstream&) const;
+	void __decompress(ifstream&, ofstream&, file_head&) const;
 	void __encode_write(ofstream&, const char*, streamsize = STEP) const;
 	void __decode_read(ifstream&, char*, streamsize = STEP) const;
 	unsigned __encrypt(unsigned) const;
@@ -38,5 +38,5 @@ private:
 	path __zip_root;
 	ifstream __unzip_file;
 	path __unzip_dir_dest;
-	unsigned __key = 0x12345678;
+	unsigned __key = 'xxm';
 };
