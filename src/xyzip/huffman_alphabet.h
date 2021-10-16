@@ -1,17 +1,21 @@
 #pragma once
+#include <optional>
+#include <unordered_map>
+#include <string>
+
+using namespace std;
 
 class huffman_alphabet
 {
 public:
 
 	using letter_ty = unsigned char;
-	using code_ty = unsigned;
+	using code_ty = string;
 	using weight_ty = unsigned;
 
 	struct node
 	{
-		node(weight_ty w, letter_ty l) : weight(w), letter(l) {}
-		node(weight_ty w) : weight(w) {}
+		node(letter_ty l, weight_ty w) : letter(l), weight(w) {}
 
 		node* left = nullptr;
 		node* right = nullptr;
@@ -20,10 +24,10 @@ public:
 	};
 
 	~huffman_alphabet();
-	void add_element(weight_ty, letter_ty);
+	optional<code_ty> operator[](letter_ty);
+	optional<letter_ty> operator[](code_ty);
+	void emplace_node(letter_ty, weight_ty);
 	void generate();
-	code_ty operator[](letter_ty);
-	letter_ty operator[](code_ty);
 	bool empty();
 
 private:

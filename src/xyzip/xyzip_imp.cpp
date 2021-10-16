@@ -91,6 +91,10 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	__encode_write(__zip_file, path_str.c_str(), file_h.path_len);
 
 	ifstream fin(file_entry, ios::in | ios::binary);
+
+	huffman_alphabet alphabet;
+	__generate_alphabet(fin, alphabet);
+
 	__compress(fin, __zip_file);
 
 	__zip_file.flush();
@@ -134,6 +138,34 @@ bool xyzip_imp::__pop_file()
 	__decompress(__unzip_file, fout, file_h);
 
 	return true;
+}
+
+void xyzip_imp::__generate_alphabet(ifstream& fin, huffman_alphabet& alphabet)
+{
+	assert(alphabet.empty());
+
+	using alphabet_pair = pair<unsigned char, unsigned>;
+	unordered_map<unsigned char, unsigned> umap;
+	vector<alphabet_pair> vec;
+	char buff[BUFF_SIZE] = { 0 };
+
+	while (!fin.eof())
+	{
+		fin.read(buff, sizeof(buff));
+
+		for (auto i = 0; i < fin.gcount(); ++i)
+			++umap[buff[i]];
+	}
+
+	for (auto it : umap)
+		vec.emplace_back(make_pair(it.first, it.second));
+
+	sort(vec.begin(), vec.end(), [](alphabet_pair a, alphabet_pair b) {return a.second < b.second; });
+
+	for (auto it : vec)
+		alphabet.emplace_node(it.first, it.second);
+
+	alphabet.generate();
 }
 
 void xyzip_imp::__compress(ifstream& fin, ofstream& fout) const

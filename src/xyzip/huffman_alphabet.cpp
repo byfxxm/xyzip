@@ -6,16 +6,32 @@ huffman_alphabet::~huffman_alphabet()
 	__destruct(__root);
 }
 
-void huffman_alphabet::add_element(weight_ty w, letter_ty l)
+optional<huffman_alphabet::code_ty> huffman_alphabet::operator[](letter_ty l)
+{
+	if (__alphabet.find(l) == __alphabet.end())
+		return nullopt;
+
+	return __alphabet.find(l)->second;
+}
+
+optional<huffman_alphabet::letter_ty> huffman_alphabet::operator[](code_ty c)
+{
+	if (__alphabet_rev.find(c) == __alphabet_rev.end())
+		return nullopt;
+
+	return __alphabet_rev.find(c)->second;
+}
+
+void huffman_alphabet::emplace_node(letter_ty l, weight_ty w)
 {
 	if (empty())
 	{
-		__root = new node(w, l);
+		__root = new node(l, w);
 		return;
 	}
 
-	auto new_root = new node(w + __root->weight);
-	auto node_ = new node(w, l);
+	auto new_root = new node(0, w + __root->weight);
+	auto node_ = new node(l, w);
 
 	if (w > __root->weight)
 	{
@@ -36,17 +52,7 @@ void huffman_alphabet::generate()
 	if (empty())
 		return;
 
-	__generate(__root, 0);
-}
-
-huffman_alphabet::code_ty huffman_alphabet::operator[](letter_ty l)
-{
-	return __alphabet[l];
-}
-
-huffman_alphabet::letter_ty huffman_alphabet::operator[](code_ty c)
-{
-	return __alphabet_rev[c];
+	__generate(__root, "");
 }
 
 bool huffman_alphabet::empty()
@@ -67,10 +73,10 @@ void huffman_alphabet::__generate(node* r, code_ty c)
 	}
 
 	if (r->left)
-		__generate(r->left, c << 1);
+		__generate(r->left, c + "0");
 
 	if (r->right)
-		__generate(r->right, (c << 1) + 1);
+		__generate(r->right, c + "1");
 }
 
 void huffman_alphabet::__destruct(node* r)

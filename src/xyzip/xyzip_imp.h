@@ -1,4 +1,5 @@
 #pragma once
+#include "huffman_alphabet.h"
 
 struct file_head
 {
@@ -26,6 +27,7 @@ private:
 	void __push_file(const directory_entry&);
 	void __push_directory(const directory_entry&);
 	bool __pop_file();
+	void __generate_alphabet(ifstream&, huffman_alphabet&);
 
 	void __compress(ifstream&, ofstream&) const;
 	void __decompress(ifstream&, ofstream&, file_head&) const;

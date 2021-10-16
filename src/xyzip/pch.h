@@ -14,6 +14,7 @@
 #include <cassert>
 #include <functional>
 #include <unordered_map>
+#include <optional>
 
 #define BYTE_CAST(var) (*(char*)&(var))
 #define UINT_CAST(var) (*(unsigned*)&(var))
@@ -22,6 +23,7 @@ constexpr auto EXT = L".xyzip";
 constexpr auto FILE_TAG = 0xFABCBCDC;
 constexpr auto RLE_TAG = 0xFFABCBCD;
 constexpr auto STEP = sizeof(unsigned);
+constexpr auto BUFF_SIZE = 1024;
 
 using namespace std;
 using namespace filesystem;

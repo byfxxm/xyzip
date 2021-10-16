@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <string>
 #include "../xyzip/xyzip.h"
+#include "../xyzip/huffman_alphabet.h"
 
 #ifdef _DEBUG
 #pragma comment(lib, "../Debug/xyzip.lib")
@@ -13,10 +14,19 @@
 #pragma comment(lib, "../Release/xyzip.lib")
 #endif
 
-using namespace std;
-
 int main()
 {
+	//huffman_alphabet huf;
+	//huf.emplace_node('a', 1);
+	//huf.emplace_node('b', 2);
+	//huf.emplace_node('c', 3);
+	//huf.emplace_node('d', 4);
+	//huf.emplace_node('e', 5);
+
+	//huf.generate();
+
+	//return 0;
+
 #if 1
 	filesystem::remove_all("F:\\VSProject\\tests\\pack");
 	xy_setk('nike');

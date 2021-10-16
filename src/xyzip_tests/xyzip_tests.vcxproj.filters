@@ -18,5 +18,8 @@
     <ClCompile Include="xyzip_tests.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\xyzip\huffman_alphabet.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
