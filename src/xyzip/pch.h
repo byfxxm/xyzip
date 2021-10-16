@@ -13,6 +13,7 @@
 #include <fstream>
 #include <cassert>
 #include <functional>
+#include <unordered_map>
 
 #define BYTE_CAST(var) (*(char*)&(var))
 #define UINT_CAST(var) (*(unsigned*)&(var))

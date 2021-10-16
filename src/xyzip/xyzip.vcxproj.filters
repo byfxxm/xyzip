@@ -30,6 +30,9 @@
     <ClInclude Include="xyzip_imp.h">
       <Filter>2.imp</Filter>
     </ClInclude>
+    <ClInclude Include="huffman_alphabet.h">
+      <Filter>2.imp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -42,6 +45,9 @@
       <Filter>2.imp</Filter>
     </ClCompile>
     <ClCompile Include="xyzip_imp.cpp">
+      <Filter>2.imp</Filter>
+    </ClCompile>
+    <ClCompile Include="huffman_alphabet.cpp">
       <Filter>2.imp</Filter>
     </ClCompile>
   </ItemGroup>
