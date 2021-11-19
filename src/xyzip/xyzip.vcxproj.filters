@@ -33,6 +33,9 @@
     <ClInclude Include="huffman_alphabet.h">
       <Filter>2.imp</Filter>
     </ClInclude>
+    <ClInclude Include="bitstream.h">
+      <Filter>2.imp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -48,6 +51,9 @@
       <Filter>2.imp</Filter>
     </ClCompile>
     <ClCompile Include="huffman_alphabet.cpp">
+      <Filter>2.imp</Filter>
+    </ClCompile>
+    <ClCompile Include="bitstream.cpp">
       <Filter>2.imp</Filter>
     </ClCompile>
   </ItemGroup>

@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="bitstream.h" />
     <ClInclude Include="huffman_alphabet.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="xyzip_imp.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="bitstream.cpp" />
     <ClCompile Include="huffman_alphabet.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">

@@ -92,8 +92,8 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 
 	ifstream fin(file_entry, ios::in | ios::binary);
 
-	huffman_alphabet alphabet;
-	__generate_alphabet(fin, alphabet);
+	//huffman_alphabet alphabet;
+	//__generate_alphabet(fin, alphabet);
 
 	__compress(fin, __zip_file);
 

@@ -15,6 +15,7 @@
 #include <functional>
 #include <unordered_map>
 #include <optional>
+#include <bitset>
 
 #define BYTE_CAST(var) (*(char*)&(var))
 #define UINT_CAST(var) (*(unsigned*)&(var))
