@@ -142,15 +142,16 @@ void xyzip_imp::__compress(ifstream& fin, ofstream& fout) const
 
 	auto write_rle = [this](ofstream& fout, const rle_head& rle_h)
 	{
-		if (rle_h.count == 0)
-			return;
-
-		if (rle_h.count > 1)
+		if (rle_h.count < 3)
 		{
-			__encode_write(fout, &BYTE_CAST(rle_h.tag));
-			__encode_write(fout, &BYTE_CAST(rle_h.count));
+			for (int i = 0; i < rle_h.count; ++i)
+				__encode_write(fout, &BYTE_CAST(rle_h.data));
+
+			return;
 		}
 
+		__encode_write(fout, &BYTE_CAST(rle_h.tag));
+		__encode_write(fout, &BYTE_CAST(rle_h.count));
 		__encode_write(fout, &BYTE_CAST(rle_h.data));
 	};
 
