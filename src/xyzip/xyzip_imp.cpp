@@ -90,7 +90,7 @@ void xyzip_imp::__push_file(const directory_entry& file_entry)
 	__encode_write(__zip_file, &BYTE_CAST(file_h), sizeof(file_h));
 	__encode_write(__zip_file, path_str.c_str(), file_h.path_len);
 
-	ifstream fin(file_entry, ios::in | ios::binary);
+	ifstream fin(file_entry.path(), ios::in | ios::binary);
 	__compress(fin, __zip_file);
 
 	__zip_file.flush();
@@ -144,7 +144,7 @@ void xyzip_imp::__compress(ifstream& fin, ofstream& fout) const
 	{
 		if (rle_h.count < 3)
 		{
-			for (int i = 0; i < rle_h.count; ++i)
+			for (unsigned i = 0; i < rle_h.count; ++i)
 				__encode_write(fout, &BYTE_CAST(rle_h.data));
 
 			return;
