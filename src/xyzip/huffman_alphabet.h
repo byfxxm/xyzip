@@ -31,6 +31,6 @@ private:
 	void __destruct(node*);
 
 	node* __root = nullptr;
-	unordered_map<letter_ty, code_ty> __alphabet;
-	unordered_map<code_ty, letter_ty> __alphabet_rev;
+	std::unordered_map<letter_ty, code_ty> __alphabet;
+	std::unordered_map<code_ty, letter_ty> __alphabet_rev;
 };

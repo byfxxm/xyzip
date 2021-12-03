@@ -23,5 +23,5 @@ constexpr auto FILE_TAG = 0xFABCBCDC;
 constexpr auto RLE_TAG = 0xFFABCBCD;
 constexpr auto STEP = sizeof(unsigned);
 
-using namespace std;
-using namespace filesystem;
+namespace xyzip {}
+using namespace xyzip;
