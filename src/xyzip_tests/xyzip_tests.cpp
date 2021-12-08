@@ -17,7 +17,7 @@ using namespace std;
 
 int main()
 {
-#if 1
+#if 0
 	filesystem::remove_all("F:\\VSProject\\tests\\pack");
 	xy_setk('nike');
 	xy_zip("F:\\VSProject\\tests\\pics", "F:\\VSProject\\tests\\pack");
