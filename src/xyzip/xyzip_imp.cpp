@@ -6,29 +6,29 @@ xyzip_imp::xyzip_imp()
 	__generate_level();
 }
 
-bool xyzip_imp::zip(const char* path, const char* directory)
+bool xyzip_imp::zip(const char* src, const char* dest)
 {
-	std::filesystem::directory_entry path_entry(std::filesystem::absolute(path));
-	std::filesystem::directory_entry dir_entry(std::filesystem::absolute(directory));
+	path src_(src);
+	path dest_(dest);
 
-	if ((!path_entry.is_regular_file() && !path_entry.is_directory()))
+	if ((!is_regular_file(src_) && !is_directory(src_)))
 		return false;
 
-	if (!dir_entry.is_directory() && !create_directory(dir_entry))
+	if (!is_directory(dest_) && !create_directory(dest_))
 		return false;
 
-	__zip_file_dest = dir_entry.path().wstring() + L"\\" + path_entry.path().filename().wstring() + EXT;
+	__zip_file_dest = dest_.wstring() + L"\\" + src_.filename().wstring() + EXT;
 	__zip_file.open(__zip_file_dest, std::ios::out | std::ios::binary | std::ios::trunc);
 	{
-		if (path_entry.is_directory())
+		if (is_directory(src_))
 		{
-			__zip_root = path_entry;
-			__push_directory(path_entry);
+			__zip_root = src_;
+			__push_directory(src_);
 		}
-		else if (path_entry.is_regular_file())
+		else if (is_regular_file(src_))
 		{
-			__zip_root = path_entry.path().parent_path();
-			__push_file(path_entry);
+			__zip_root = src_.parent_path();
+			__push_file(src_);
 		}
 		else
 			assert(0);
@@ -38,23 +38,23 @@ bool xyzip_imp::zip(const char* path, const char* directory)
 	return true;
 }
 
-bool xyzip_imp::unzip(const char* file, const char* directory)
+bool xyzip_imp::unzip(const char* src, const char* dest)
 {
-	std::filesystem::directory_entry file_entry(std::filesystem::absolute(file));
-	std::filesystem::directory_entry dir_entry(std::filesystem::absolute(directory));
+	path src_(src);
+	path dest_(dest);
 
-	if (!file_entry.is_regular_file())
+	if (!is_regular_file(src_))
 		return false;
 
-	if (!dir_entry.is_directory() && !create_directory(dir_entry))
+	if (!is_directory(dest_) && !create_directory(dest_))
 		return false;
 
 	bool ret = true;
-	__unzip_dir_dest = dir_entry;
+	__unzip_dir_dest = dest_;
 
 	try
 	{
-		__unzip_file.open(file_entry, std::ios::in | std::ios::binary);
+		__unzip_file.open(src_, std::ios::in | std::ios::binary);
 		while (__pop_file());
 	}
 	catch (std::exception ex)
@@ -73,35 +73,35 @@ void xyzip_imp::setk(unsigned k)
 	__generate_level();
 }
 
-void xyzip_imp::__push_file(const std::filesystem::directory_entry& file_entry)
+void xyzip_imp::__push_file(const path& src)
 {
-	assert(file_entry.is_regular_file());
+	assert(is_regular_file(src));
 	assert(__zip_file.is_open());
 
-	if (file_entry.path() == __zip_file_dest)
+	if (src == __zip_file_dest)
 		return;
 	
 	file_head file_h;
-	file_h.file_len = file_entry.file_size();
+	file_h.file_len = directory_entry(src).file_size();
 
-	std::string path_str = file_entry.path().string().substr(__zip_root.string().length());
+	std::string path_str = src.string().substr(__zip_root.string().length());
 	file_h.path_len = (unsigned)path_str.length();
 
 	__encode_write(__zip_file, &BYTE_CAST(file_h), sizeof(file_h));
 	__encode_write(__zip_file, path_str.c_str(), file_h.path_len);
 
-	std::ifstream fin(file_entry.path(), std::ios::in | std::ios::binary);
+	std::ifstream fin(src, std::ios::in | std::ios::binary);
 	__compress(fin, __zip_file);
 
 	__zip_file.flush();
 }
 
-void xyzip_imp::__push_directory(const std::filesystem::directory_entry& dir_entry)
+void xyzip_imp::__push_directory(const path& src)
 {
-	assert(dir_entry.is_directory());
+	assert(is_directory(src));
 	assert(__zip_file.is_open());
 
-	for (auto& path_entry : std::filesystem::directory_iterator(dir_entry))
+	for (auto& path_entry : directory_iterator(src))
 	{
 		if (path_entry.is_directory())
 			__push_directory(path_entry);
@@ -125,7 +125,7 @@ bool xyzip_imp::__pop_file()
 
 	char buff[MAX_PATH] = { 0 };
 	__decode_read(__unzip_file, buff, file_h.path_len);
-	std::filesystem::path path_ = __unzip_dir_dest.wstring() + std::filesystem::path(buff).wstring();
+	path path_ = __unzip_dir_dest.wstring() + path(buff).wstring();
 
 	if (!exists(path_.parent_path()))
 		create_directories(path_.parent_path());

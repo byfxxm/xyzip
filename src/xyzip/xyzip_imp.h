@@ -25,8 +25,8 @@ namespace xyzip
 		void setk(unsigned);
 
 	private:
-		void __push_file(const std::filesystem::directory_entry&);
-		void __push_directory(const std::filesystem::directory_entry&);
+		void __push_file(const path&);
+		void __push_directory(const path&);
 		bool __pop_file();
 
 		void __compress(std::ifstream&, std::ofstream&) const;
@@ -38,10 +38,10 @@ namespace xyzip
 		void __generate_level();
 
 		std::ofstream __zip_file;
-		std::filesystem::path __zip_file_dest;
-		std::filesystem::path __zip_root;
+		path __zip_file_dest;
+		path __zip_root;
 		std::ifstream __unzip_file;
-		std::filesystem::path __unzip_dir_dest;
+		path __unzip_dir_dest;
 		unsigned __key = 'xxm';
 		unsigned __level = 0;
 	};
