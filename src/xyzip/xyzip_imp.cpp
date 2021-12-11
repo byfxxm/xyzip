@@ -236,7 +236,7 @@ void xyzip_imp::__decode_read(std::ifstream& fin, char* str, std::streamsize cou
 	}
 }
 
-unsigned xyzip_imp::__encrypt(unsigned code, unsigned level) const
+inline unsigned xyzip_imp::__encrypt(unsigned code, unsigned level) const
 {
 	for (unsigned i = 0; i < level; ++i)
 		code = ~code + __key ^ __key;
@@ -244,7 +244,7 @@ unsigned xyzip_imp::__encrypt(unsigned code, unsigned level) const
 	return code;
 }
 
-unsigned xyzip_imp::__decrypt(unsigned code, unsigned level) const
+inline unsigned xyzip_imp::__decrypt(unsigned code, unsigned level) const
 {
 	for (unsigned i = 0; i < level; ++i)
 		code = ~(code ^ __key) + __key;
