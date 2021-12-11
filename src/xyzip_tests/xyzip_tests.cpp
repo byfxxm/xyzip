@@ -24,16 +24,16 @@
 int main()
 {
 #if 1
-	std::filesystem::remove_all("F:\\VSProject\\tests\\pack");
+	std::filesystem::remove_all("tests\\pack");
 	xy_setk('nike');
 
-	if (!xy_zip("F:\\vs_projects\\tests\\pack", "F:\\vs_projects\\tests\\pics"))
+	if (!xy_zip("tests\\pack", "tests\\pics"))
 		return -1;
 
 	std::cout << "zipped" << std::endl;
 
-	std::filesystem::remove_all("F:\\vs_projects\\tests\\great");
-	if (!xy_unzip("F:\\vs_projects\\tests\\great", "F:\\vs_projects\\tests\\pack\\pics.xyzip"))
+	std::filesystem::remove_all("tests\\great");
+	if (!xy_unzip("tests\\great", "tests\\pack\\pics.xyzip"))
 		return -1;
 
 	std::cout << "unzipped" << std::endl;
