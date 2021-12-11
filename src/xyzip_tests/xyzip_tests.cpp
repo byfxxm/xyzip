@@ -27,13 +27,13 @@ int main()
 	std::filesystem::remove_all("F:\\VSProject\\tests\\pack");
 	xy_setk('nike');
 
-	if (!xy_zip("F:\\vs_projects\\tests\\pics", "F:\\vs_projects\\tests\\pack"))
+	if (!xy_zip("F:\\vs_projects\\tests\\pack", "F:\\vs_projects\\tests\\pics"))
 		return -1;
 
 	std::cout << "zipped" << std::endl;
 
 	std::filesystem::remove_all("F:\\vs_projects\\tests\\great");
-	if (!xy_unzip("F:\\vs_projects\\tests\\pack\\pics.xyzip", "F:\\vs_projects\\tests\\great"))
+	if (!xy_unzip("F:\\vs_projects\\tests\\great", "F:\\vs_projects\\tests\\pack\\pics.xyzip"))
 		return -1;
 
 	std::cout << "unzipped" << std::endl;
@@ -66,7 +66,7 @@ int main()
 				if (!s3.empty())
 					xy_setk(*(unsigned*)s3.c_str());
 
-				auto res = xy_zip(s1.c_str(), s2.c_str());
+				auto res = xy_zip(s2.c_str(), s1.c_str());
 				std::cout << (res ? "zip success!" : "zip fail!") << std::endl;
 			}
 			else if (std::stoi(s1) == 2)
@@ -88,7 +88,7 @@ int main()
 				if (!s3.empty())
 					xy_setk(*(unsigned*)s3.c_str());
 
-				auto res = xy_unzip(s1.c_str(), s2.c_str());
+				auto res = xy_unzip(s2.c_str(), s1.c_str());
 				std::cout << (res ? "unzip success!" : "unzip fail!") << std::endl;
 			}
 		}

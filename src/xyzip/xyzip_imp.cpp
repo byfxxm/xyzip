@@ -6,7 +6,7 @@ xyzip_imp::xyzip_imp()
 	__generate_level();
 }
 
-bool xyzip_imp::zip(const char* src, const char* dest)
+bool xyzip_imp::zip(const char* dest, const char* src)
 {
 	path src_(src);
 	path dest_(dest);
@@ -38,7 +38,7 @@ bool xyzip_imp::zip(const char* src, const char* dest)
 	return true;
 }
 
-bool xyzip_imp::unzip(const char* src, const char* dest)
+bool xyzip_imp::unzip(const char* dest, const char* src)
 {
 	path src_(src);
 	path dest_(dest);
@@ -91,7 +91,7 @@ void xyzip_imp::__push_file(const path& src)
 	__encode_write(__zip_file, path_str.c_str(), file_h.path_len);
 
 	std::ifstream fin(src, std::ios::in | std::ios::binary);
-	__compress(fin, __zip_file);
+	__compress(__zip_file, fin);
 
 	__zip_file.flush();
 }
@@ -131,12 +131,12 @@ bool xyzip_imp::__pop_file()
 		create_directories(path_.parent_path());
 
 	std::ofstream fout(path_, std::ios::out | std::ios::binary);
-	__decompress(__unzip_file, fout, file_h);
+	__decompress(fout, __unzip_file, file_h);
 
 	return true;
 }
 
-void xyzip_imp::__compress(std::ifstream& fin, std::ofstream& fout) const
+void xyzip_imp::__compress(std::ofstream& fout, std::ifstream& fin) const
 {
 	assert(fin.is_open() && fout.is_open());
 
@@ -177,7 +177,7 @@ void xyzip_imp::__compress(std::ifstream& fin, std::ofstream& fout) const
 	}
 }
 
-void xyzip_imp::__decompress(std::ifstream& fin, std::ofstream& fout, file_head& file_h) const
+void xyzip_imp::__decompress(std::ofstream& fout, std::ifstream& fin, file_head& file_h) const
 {
 	assert(fin.is_open() && fout.is_open());
 
