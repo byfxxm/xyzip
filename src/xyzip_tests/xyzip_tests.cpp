@@ -7,30 +7,36 @@
 #include <string>
 #include "../xyzip/xyzip.h"
 
-#ifdef _DEBUG
-#pragma comment(lib, "../Debug/xyzip.lib")
+#ifdef _WIN64
+#define PLATFORM "x64"
 #else
-#pragma comment(lib, "../Release/xyzip.lib")
+#define PLATFORM ""
 #endif
 
-using namespace std;
+#ifdef _DEBUG
+#define CONFIG "Debug"
+#else
+#define CONFIG "Release"
+#endif
+
+#pragma comment(lib, "../" PLATFORM "/" CONFIG "/xyzip.lib")
 
 int main()
 {
-#if 0
-	filesystem::remove_all("F:\\VSProject\\tests\\pack");
+#if 1
+	std::filesystem::remove_all("F:\\VSProject\\tests\\pack");
 	xy_setk('nike');
 	xy_zip("F:\\VSProject\\tests\\pics", "F:\\VSProject\\tests\\pack");
-	cout << "zipped" << endl;
+	std::cout << "zipped" << std::endl;
 	xy_unzip("F:\\VSProject\\tests\\pack\\pics.xyzip", "F:\\VSProject\\tests\\pack");
-	cout << "unzipped" << endl;
+	std::cout << "unzipped" << std::endl;
 #else
-	string s1, s2, s3;
+	std::string s1, s2, s3;
 
 	while (1)
 	{
-		cout << "(1)zip or (2)unzip: ";
-		cin >> s1;
+		std::cout << "(1)zip or (2)unzip: ";
+		std::cin >> s1;
 
 		try
 		{
@@ -38,50 +44,50 @@ int main()
 			{
 				do
 				{
-					cout << "input source directory: ";
-					cin >> s1;
-				} while (!filesystem::is_directory(s1) && !filesystem::is_regular_file(s1));
+					std::cout << "input source directory: ";
+					std::cin >> s1;
+				} while (!std::filesystem::is_directory(s1) && !std::filesystem::is_regular_file(s1));
 
 				do
 				{
-					cout << "input dest directory: ";
-					cin >> s2;
-				} while (!filesystem::is_directory(s2));
+					std::cout << "input dest directory: ";
+					std::cin >> s2;
+				} while (!std::filesystem::is_directory(s2));
 
-				cout << "input key: ";
-				cin >> s3;
+				std::cout << "input key: ";
+				std::cin >> s3;
 				if (!s3.empty())
 					xy_setk(*(unsigned*)s3.c_str());
 
 				auto res = xy_zip(s1.c_str(), s2.c_str());
-				cout << (res ? "zip success!" : "zip fail!") << endl;
+				std::cout << (res ? "zip success!" : "zip fail!") << std::endl;
 			}
 			else if (std::stoi(s1) == 2)
 			{
 				do
 				{
-					cout << "input source file: ";
-					cin >> s1;
-				} while (!filesystem::is_regular_file(s1));
+					std::cout << "input source file: ";
+					std::cin >> s1;
+				} while (!std::filesystem::is_regular_file(s1));
 
 				do
 				{
-					cout << "input dest directory: ";
-					cin >> s2;
-				} while (!filesystem::is_directory(s2));
+					std::cout << "input dest directory: ";
+					std::cin >> s2;
+				} while (!std::filesystem::is_directory(s2));
 
-				cout << "input key: ";
-				cin >> s3;
+				std::cout << "input key: ";
+				std::cin >> s3;
 				if (!s3.empty())
 					xy_setk(*(unsigned*)s3.c_str());
 
 				auto res = xy_unzip(s1.c_str(), s2.c_str());
-				cout << (res ? "unzip success!" : "unzip fail!") << endl;
+				std::cout << (res ? "unzip success!" : "unzip fail!") << std::endl;
 			}
 		}
 		catch (...)
 		{
-			cout << "input error!" << endl;
+			std::cout << "input error!" << std::endl;
 		}
 	}
 #endif
