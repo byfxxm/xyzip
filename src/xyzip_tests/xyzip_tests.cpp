@@ -12,14 +12,14 @@
 #else
 #define PLATFORM ""
 #endif
-
 #ifdef _DEBUG
 #define CONFIG "Debug"
 #else
 #define CONFIG "Release"
 #endif
+#define LIB_DIR "../" PLATFORM "/" CONFIG
 
-#pragma comment(lib, "../" PLATFORM "/" CONFIG "/xyzip.lib")
+#pragma comment(lib, LIB_DIR "/xyzip.lib")
 
 int main()
 {
