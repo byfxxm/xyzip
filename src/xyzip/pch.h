@@ -15,13 +15,13 @@
 #include <functional>
 #include <unordered_map>
 
-#define BYTE_CAST(var) (*(char*)&(var))
-#define UINT_CAST(var) (*(unsigned*)&(var))
+#define CHAR_CAST(var) (*(char*)&(var))
+#define UINT32_CAST(var) (*(uint32_t*)&(var))
 
 constexpr auto EXT = L".xyzip";
 constexpr auto FILE_TAG = 0xFABCBCDC;
 constexpr auto RLE_TAG = 0xFFABCBCD;
-constexpr auto STEP = sizeof(unsigned);
+constexpr auto STEP = 4;
 
 namespace xyzip {}
 using namespace xyzip;

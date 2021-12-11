@@ -4,16 +4,16 @@ namespace xyzip
 {
 	struct file_head
 	{
-		unsigned tag = FILE_TAG;
-		unsigned path_len = 0;
-		unsigned long long file_len = 0;
+		uint32_t tag = FILE_TAG;
+		uint32_t path_len = 0;
+		uint64_t file_len = 0;
 	};
 
 	struct rle_head
 	{
-		unsigned tag = RLE_TAG;
-		unsigned count = 0;
-		unsigned data = 0;
+		uint32_t tag = RLE_TAG;
+		uint32_t count = 0;
+		uint32_t data = 0;
 	};
 
 	class xyzip_imp
@@ -22,7 +22,7 @@ namespace xyzip
 		xyzip_imp();
 		bool zip(const char*, const char*);
 		bool unzip(const char*, const char*);
-		void setk(unsigned);
+		void setk(uint32_t);
 
 	private:
 		void __push_file(const path&);
@@ -32,8 +32,8 @@ namespace xyzip
 		void __decompress(std::ofstream&, std::ifstream&, file_head&) const;
 		void __encode_write(std::ofstream&, const char*, std::streamsize = STEP) const;
 		void __decode_read(std::ifstream&, char*, std::streamsize = STEP) const;
-		unsigned __encrypt(unsigned, unsigned) const;
-		unsigned __decrypt(unsigned, unsigned) const;
+		unsigned __encrypt(uint32_t, uint32_t) const;
+		unsigned __decrypt(uint32_t, uint32_t) const;
 		void __generate_level();
 
 	private:
@@ -42,7 +42,7 @@ namespace xyzip
 		path __zip_root;
 		std::ifstream __unzip_file;
 		path __unzip_dir_dest;
-		unsigned __key = 'xxm';
-		unsigned __level = 0;
+		uint32_t __key = 'xxm';
+		uint32_t __level = 0;
 	};
 }

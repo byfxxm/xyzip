@@ -67,7 +67,7 @@ bool xyzip_imp::unzip(const char* dest, const char* src)
 	return ret;
 }
 
-void xyzip_imp::setk(unsigned k)
+void xyzip_imp::setk(uint32_t k)
 {
 	__key = k;
 	__generate_level();
@@ -87,7 +87,7 @@ void xyzip_imp::__push_file(const path& src)
 	std::string path_str = src.string().substr(__zip_root.string().length());
 	file_h.path_len = (unsigned)path_str.length();
 
-	__encode_write(__zip_file, &BYTE_CAST(file_h), sizeof(file_h));
+	__encode_write(__zip_file, &CHAR_CAST(file_h), sizeof(file_h));
 	__encode_write(__zip_file, path_str.c_str(), file_h.path_len);
 
 	std::ifstream fin(src, std::ios::in | std::ios::binary);
@@ -118,7 +118,7 @@ bool xyzip_imp::__pop_file()
 		return false;
 
 	file_head file_h;
-	__decode_read(__unzip_file, &BYTE_CAST(file_h), sizeof(file_h));
+	__decode_read(__unzip_file, &CHAR_CAST(file_h), sizeof(file_h));
 
 	if (file_h.tag != FILE_TAG)
 		throw std::exception("unzip file error");
@@ -144,28 +144,28 @@ void xyzip_imp::__compress(std::ofstream& fout, std::ifstream& fin) const
 	{
 		if (rle_h.count < 3)
 		{
-			for (unsigned i = 0; i < rle_h.count; ++i)
-				__encode_write(fout, &BYTE_CAST(rle_h.data));
+			for (uint32_t i = 0; i < rle_h.count; ++i)
+				__encode_write(fout, &CHAR_CAST(rle_h.data));
 
 			return;
 		}
 
-		__encode_write(fout, &BYTE_CAST(rle_h.tag));
-		__encode_write(fout, &BYTE_CAST(rle_h.count));
-		__encode_write(fout, &BYTE_CAST(rle_h.data));
+		__encode_write(fout, &CHAR_CAST(rle_h.tag));
+		__encode_write(fout, &CHAR_CAST(rle_h.count));
+		__encode_write(fout, &CHAR_CAST(rle_h.data));
 	};
 
 	rle_head rle_h;
-	unsigned input = 0;
+	uint32_t input = 0;
 
 	for (; ; ++rle_h.count, rle_h.data = input)
 	{
-		fin.read(&BYTE_CAST(input), STEP);
+		fin.read(&CHAR_CAST(input), STEP);
 
 		if (fin.eof())
 		{
 			write_rle(fout, rle_h);
-			__encode_write(fout, &BYTE_CAST(input), fin.gcount());
+			__encode_write(fout, &CHAR_CAST(input), fin.gcount());
 			break;
 		}
 
@@ -182,71 +182,71 @@ void xyzip_imp::__decompress(std::ofstream& fout, std::ifstream& fin, file_head&
 	assert(fin.is_open() && fout.is_open());
 
 	rle_head rle_h;
-	unsigned input = 0;
+	uint32_t input = 0;
 	auto left = file_h.file_len;
 
 	while (left >= STEP)
 	{
-		__decode_read(fin, &BYTE_CAST(input));
+		__decode_read(fin, &CHAR_CAST(input));
 
 		if (input != RLE_TAG)
 		{
-			fout.write(&BYTE_CAST(input), STEP);
+			fout.write(&CHAR_CAST(input), STEP);
 			left -= fin.gcount();
 			continue;
 		}
 
-		__decode_read(fin, &BYTE_CAST(rle_h.count));
-		__decode_read(fin, &BYTE_CAST(rle_h.data));
+		__decode_read(fin, &CHAR_CAST(rle_h.count));
+		__decode_read(fin, &CHAR_CAST(rle_h.data));
 
-		for (unsigned i = 0; i < rle_h.count; ++i)
-			fout.write(&BYTE_CAST(rle_h.data), STEP);
+		for (uint32_t i = 0; i < rle_h.count; ++i)
+			fout.write(&CHAR_CAST(rle_h.data), STEP);
 
 		left -= (decltype(left))STEP * rle_h.count;
 	}
 
-	__decode_read(fin, &BYTE_CAST(input), left);
-	fout.write(&BYTE_CAST(input), left);
+	__decode_read(fin, &CHAR_CAST(input), left);
+	fout.write(&CHAR_CAST(input), left);
 }
 
 void xyzip_imp::__encode_write(std::ofstream& fout, const char* str, std::streamsize count) const
 {
-	unsigned idx = 0;
-	unsigned code = 0;
+	uint32_t idx = 0;
+	uint32_t code = 0;
 
 	for (; idx < count; idx += STEP)
 	{
-		code = __encrypt(UINT_CAST(str[idx]), __level);
-		fout.write(&BYTE_CAST(code), min(STEP, count - idx));
+		code = __encrypt(UINT32_CAST(str[idx]), __level);
+		fout.write(&CHAR_CAST(code), min(STEP, count - idx));
 	}
 }
 
 void xyzip_imp::__decode_read(std::ifstream& fin, char* str, std::streamsize count) const
 {
-	unsigned idx = 0;
-	unsigned code = 0;
-	unsigned len = 0;
+	uint32_t idx = 0;
+	uint32_t code = 0;
+	uint32_t len = 0;
 
 	for (; idx < count; idx += STEP)
 	{
-		len = min(STEP, (unsigned)count - idx);
-		fin.read(&BYTE_CAST(code), len);
+		len = min(STEP, (uint32_t)count - idx);
+		fin.read(&CHAR_CAST(code), len);
 		auto temp = __decrypt(code, __level);
 		memcpy(&str[idx], &temp, len);
 	}
 }
 
-inline unsigned xyzip_imp::__encrypt(unsigned code, unsigned level) const
+inline unsigned xyzip_imp::__encrypt(uint32_t code, uint32_t level) const
 {
-	for (unsigned i = 0; i < level; ++i)
+	for (uint32_t i = 0; i < level; ++i)
 		code = ~code + __key ^ __key;
 
 	return code;
 }
 
-inline unsigned xyzip_imp::__decrypt(unsigned code, unsigned level) const
+inline unsigned xyzip_imp::__decrypt(uint32_t code, uint32_t level) const
 {
-	for (unsigned i = 0; i < level; ++i)
+	for (uint32_t i = 0; i < level; ++i)
 		code = ~(code ^ __key) + __key;
 
 	return code;
