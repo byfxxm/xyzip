@@ -64,7 +64,7 @@ int main()
 				std::cout << "input key: ";
 				std::cin >> s3;
 				if (!s3.empty())
-					xy_setk(*(uint32_t*)s3.c_str());
+					xy_setk(*(unsigned*)s3.c_str());
 
 				auto res = xy_zip(s2.c_str(), s1.c_str());
 				std::cout << (res ? "zip success!" : "zip fail!") << std::endl;
@@ -86,7 +86,7 @@ int main()
 				std::cout << "input key: ";
 				std::cin >> s3;
 				if (!s3.empty())
-					xy_setk(*(uint32_t*)s3.c_str());
+					xy_setk(*(unsigned*)s3.c_str());
 
 				auto res = xy_unzip(s2.c_str(), s1.c_str());
 				std::cout << (res ? "unzip success!" : "unzip fail!") << std::endl;

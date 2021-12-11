@@ -22,7 +22,7 @@ namespace xyzip
 		xyzip_imp();
 		bool zip(const char*, const char*);
 		bool unzip(const char*, const char*);
-		void setk(uint32_t);
+		void setk(unsigned);
 
 	private:
 		void __push_file(const path&);

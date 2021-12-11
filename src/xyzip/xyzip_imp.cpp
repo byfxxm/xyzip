@@ -67,7 +67,7 @@ bool xyzip_imp::unzip(const char* dest, const char* src)
 	return ret;
 }
 
-void xyzip_imp::setk(uint32_t k)
+void xyzip_imp::setk(unsigned k)
 {
 	__key = k;
 	__generate_level();
