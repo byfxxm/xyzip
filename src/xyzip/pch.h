@@ -16,7 +16,7 @@
 #include <unordered_map>
 
 #define CHAR_CAST(var) (*(char*)&(var))
-#define UINT32_CAST(var) (*(uint32_t*)&(var))
+#define UINT_CAST(var) (*(unsigned*)&(var))
 
 constexpr auto EXT = L".xyzip";
 constexpr auto FILE_TAG = 0xFABCBCDC;
