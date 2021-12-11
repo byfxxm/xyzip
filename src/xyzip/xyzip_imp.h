@@ -28,7 +28,6 @@ namespace xyzip
 		void __push_file(const path&);
 		void __push_directory(const path&);
 		bool __pop_file();
-
 		void __compress(std::ofstream&, std::ifstream&) const;
 		void __decompress(std::ofstream&, std::ifstream&, file_head&) const;
 		void __encode_write(std::ofstream&, const char*, std::streamsize = STEP) const;
@@ -37,6 +36,7 @@ namespace xyzip
 		unsigned __decrypt(unsigned, unsigned) const;
 		void __generate_level();
 
+	private:
 		std::ofstream __zip_file;
 		path __zip_file_dest;
 		path __zip_root;
