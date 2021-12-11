@@ -27,13 +27,13 @@ int main()
 	std::filesystem::remove_all("tests\\pack");
 	xy_setk('nike');
 
-	if (!xy_zip("tests\\pack", "tests\\pics"))
+	if (!xy_zip("tests", "tests\\pics"))
 		return -1;
 
 	std::cout << "zipped" << std::endl;
 
-	std::filesystem::remove_all("tests\\great");
-	if (!xy_unzip("tests\\great", "tests\\pack\\pics.xyzip"))
+	std::filesystem::remove_all("tests\\unzip");
+	if (!xy_unzip("tests\\unzip", "tests\\pics.xyzip"))
 		return -1;
 
 	std::cout << "unzipped" << std::endl;
