@@ -21,7 +21,7 @@
 constexpr auto EXT = L".xyzip";
 constexpr auto FILE_TAG = 0xFABCBCDC;
 constexpr auto RLE_TAG = 0xFFABCBCD;
-constexpr auto STEP = 4;
+constexpr auto STEP = sizeof(unsigned);
 
 namespace xyzip {}
 using namespace xyzip;
