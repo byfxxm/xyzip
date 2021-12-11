@@ -17,9 +17,9 @@
 #else
 #define CONFIG "Release"
 #endif
-#define LIB_DIR "../" PLATFORM "/" CONFIG
+#define LIB_DIR "../" PLATFORM "/" CONFIG "/"
 
-#pragma comment(lib, LIB_DIR "/xyzip.lib")
+#pragma comment(lib, LIB_DIR "xyzip.lib")
 
 int main()
 {
