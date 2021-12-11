@@ -85,7 +85,7 @@ void xyzip_imp::__push_file(const path& src)
 	file_h.file_len = directory_entry(src).file_size();
 
 	std::string path_str = src.string().substr(__zip_root.string().length());
-	file_h.path_len = (unsigned)path_str.length();
+	file_h.path_len = (uint32_t)path_str.length();
 
 	__encode_write(__zip_file, &CHAR_CAST(file_h), sizeof(file_h));
 	__encode_write(__zip_file, path_str.c_str(), file_h.path_len);
@@ -236,7 +236,7 @@ void xyzip_imp::__decode_read(std::ifstream& fin, char* str, std::streamsize cou
 	}
 }
 
-inline unsigned xyzip_imp::__encrypt(uint32_t code, uint32_t level) const
+inline uint32_t xyzip_imp::__encrypt(uint32_t code, uint32_t level) const
 {
 	for (uint32_t i = 0; i < level; ++i)
 		code = ~code + __key ^ __key;
@@ -244,7 +244,7 @@ inline unsigned xyzip_imp::__encrypt(uint32_t code, uint32_t level) const
 	return code;
 }
 
-inline unsigned xyzip_imp::__decrypt(uint32_t code, uint32_t level) const
+inline uint32_t xyzip_imp::__decrypt(uint32_t code, uint32_t level) const
 {
 	for (uint32_t i = 0; i < level; ++i)
 		code = ~(code ^ __key) + __key;

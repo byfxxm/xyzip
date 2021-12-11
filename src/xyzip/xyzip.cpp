@@ -18,7 +18,7 @@ bool xy_unzip(const char* file, const char* directory)
 	return instance().unzip(file, directory);
 }
 
-void xy_setk(unsigned key)
+void xy_setk(uint32_t key)
 {
 	return instance().setk(key);
 }

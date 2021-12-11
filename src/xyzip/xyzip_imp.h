@@ -32,8 +32,8 @@ namespace xyzip
 		void __decompress(std::ofstream&, std::ifstream&, file_head&) const;
 		void __encode_write(std::ofstream&, const char*, std::streamsize = STEP) const;
 		void __decode_read(std::ifstream&, char*, std::streamsize = STEP) const;
-		unsigned __encrypt(uint32_t, uint32_t) const;
-		unsigned __decrypt(uint32_t, uint32_t) const;
+		uint32_t __encrypt(uint32_t, uint32_t) const;
+		uint32_t __decrypt(uint32_t, uint32_t) const;
 		void __generate_level();
 
 	private:

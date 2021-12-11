@@ -4,9 +4,9 @@ class huffman_alphabet
 {
 public:
 
-	using letter_ty = unsigned char;
-	using code_ty = unsigned;
-	using weight_ty = unsigned;
+	using letter_ty = uint8_t;
+	using code_ty = uint32_t;
+	using weight_ty = uint32_t;
 
 	struct node
 	{
