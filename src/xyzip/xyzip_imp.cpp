@@ -85,7 +85,7 @@ void xyzip_imp::__push_file(const std::filesystem::directory_entry& file_entry)
 	file_h.file_len = file_entry.file_size();
 
 	std::string path_str = file_entry.path().string().substr(__zip_root.string().length());
-	file_h.path_len = path_str.length();
+	file_h.path_len = (unsigned)path_str.length();
 
 	__encode_write(__zip_file, &BYTE_CAST(file_h), sizeof(file_h));
 	__encode_write(__zip_file, path_str.c_str(), file_h.path_len);
