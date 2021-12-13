@@ -123,7 +123,7 @@ bool xyzip_imp::__pop_file()
 	if (file_h.tag != FILE_TAG)
 		throw std::exception("unzip file error");
 
-	char buff[MAX_PATH] = { 0 };
+	char buff[MAX_PATH]{};
 	__decode_read(__unzip_file, buff, file_h.path_len);
 	path path_ = __unzip_dir_dest.wstring() + path(buff).wstring();
 
