@@ -2,9 +2,9 @@
 #include "xyzip.h"
 #include "xyzip_imp.h"
 
-inline xyzip_imp& instance()
+inline xyzip_imp_c& instance()
 {
-	static xyzip_imp inst;
+	static xyzip_imp_c inst;
 	return inst;
 }
 
