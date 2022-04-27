@@ -2,25 +2,25 @@
 
 namespace xyzip
 {
-	struct file_head_s
+	struct FileHead
 	{
 		unsigned tag = FILE_TAG;
 		unsigned path_len = 0;
 		unsigned long long file_len = 0;
 	};
 
-	struct rle_head_s
+	struct RleHead
 	{
 		unsigned tag = RLE_TAG;
 		unsigned count = 0;
 		unsigned data = 0;
 	};
 
-	class xyzip_imp_c
+	class XyzipImp
 	{
 	public:
-		xyzip_imp_c();
-		bool zip(const char*, const char*);
+		XyzipImp();
+		bool Zip(const char*, const char*);
 		bool unzip(const char*, const char*);
 		void setk(unsigned);
 
@@ -29,7 +29,7 @@ namespace xyzip
 		void __push_directory(const path&);
 		bool __pop_file();
 		void __compress(std::ofstream&, std::ifstream&) const;
-		void __decompress(std::ofstream&, std::ifstream&, file_head_s&) const;
+		void __decompress(std::ofstream&, std::ifstream&, FileHead&) const;
 		void __encode_write(std::ofstream&, const char*, std::streamsize = STEP) const;
 		void __decode_read(std::ifstream&, char*, std::streamsize = STEP) const;
 		unsigned __encrypt(unsigned, unsigned) const;

@@ -2,15 +2,15 @@
 #include "xyzip.h"
 #include "xyzip_imp.h"
 
-inline xyzip_imp_c& instance()
+inline XyzipImp& instance()
 {
-	static xyzip_imp_c inst;
+	static XyzipImp inst;
 	return inst;
 }
 
 bool xy_zip(const char* path, const char* directory)
 {
-	return instance().zip(path, directory);
+	return instance().Zip(path, directory);
 }
 
 bool xy_unzip(const char* file, const char* directory)
