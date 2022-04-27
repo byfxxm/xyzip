@@ -17,23 +17,23 @@ bool XyzipImp::Zip(const char* dest, const char* src)
 	if (!is_directory(dest_) && !create_directory(dest_))
 		return false;
 
-	__zip_file_dest = dest_.wstring() + L"\\" + src_.filename().wstring() + EXT;
-	__zip_file.open(__zip_file_dest, std::ios::out | std::ios::binary | std::ios::trunc);
+	zip_file_dest_ = dest_.wstring() + L"\\" + src_.filename().wstring() + EXT;
+	zip_file_.open(zip_file_dest_, std::ios::out | std::ios::binary | std::ios::trunc);
 	{
 		if (is_directory(src_))
 		{
-			__zip_root = src_;
+			zip_root_ = src_;
 			PushDirectory(src_);
 		}
 		else if (is_regular_file(src_))
 		{
-			__zip_root = src_.parent_path();
+			zip_root_ = src_.parent_path();
 			PushFile(src_);
 		}
 		else
 			assert(0);
 	}
-	__zip_file.close();
+	zip_file_.close();
 
 	return true;
 }
@@ -50,11 +50,11 @@ bool XyzipImp::Unzip(const char* dest, const char* src)
 		return false;
 
 	bool ret = true;
-	__unzip_dir_dest = dest_;
+	unzip_dir_dest_ = dest_;
 
 	try
 	{
-		__unzip_file.open(src_, std::ios::in | std::ios::binary);
+		unzip_file_.open(src_, std::ios::in | std::ios::binary);
 		while (PopFile());
 	}
 	catch (std::exception ex)
@@ -63,43 +63,43 @@ bool XyzipImp::Unzip(const char* dest, const char* src)
 		ret = false;
 	}
 
-	__unzip_file.close();
+	unzip_file_.close();
 	return ret;
 }
 
 void XyzipImp::SetKey(unsigned k)
 {
-	__key = k;
+	key_ = k;
 	GenerateLevel();
 }
 
 void XyzipImp::PushFile(const path& src)
 {
 	assert(is_regular_file(src));
-	assert(__zip_file.is_open());
+	assert(zip_file_.is_open());
 
-	if (src == __zip_file_dest)
+	if (src == zip_file_dest_)
 		return;
 	
 	FileHead file_h;
 	file_h.file_len = directory_entry(src).file_size();
 
-	std::string path_str = src.string().substr(__zip_root.string().length());
+	std::string path_str = src.string().substr(zip_root_.string().length());
 	file_h.path_len = (unsigned)path_str.length();
 
-	EncodeWrite(__zip_file, &CHAR_CAST(file_h), sizeof(file_h));
-	EncodeWrite(__zip_file, path_str.c_str(), file_h.path_len);
+	EncodeWrite(zip_file_, &CHAR_CAST(file_h), sizeof(file_h));
+	EncodeWrite(zip_file_, path_str.c_str(), file_h.path_len);
 
 	std::ifstream fin(src, std::ios::in | std::ios::binary);
-	Compress(__zip_file, fin);
+	Compress(zip_file_, fin);
 
-	__zip_file.flush();
+	zip_file_.flush();
 }
 
 void XyzipImp::PushDirectory(const path& src)
 {
 	assert(is_directory(src));
-	assert(__zip_file.is_open());
+	assert(zip_file_.is_open());
 
 	for (auto& path_entry : directory_iterator(src))
 	{
@@ -114,24 +114,24 @@ void XyzipImp::PushDirectory(const path& src)
 
 bool XyzipImp::PopFile()
 {
-	if (__unzip_file.peek() == EOF)
+	if (unzip_file_.peek() == EOF)
 		return false;
 
 	FileHead file_h;
-	DecodeRead(__unzip_file, &CHAR_CAST(file_h), sizeof(file_h));
+	DecodeRead(unzip_file_, &CHAR_CAST(file_h), sizeof(file_h));
 
 	if (file_h.tag != FILE_TAG)
 		throw std::exception("unzip file error");
 
 	char buff[MAX_PATH]{};
-	DecodeRead(__unzip_file, buff, file_h.path_len);
-	path path_ = __unzip_dir_dest.wstring() + path(buff).wstring();
+	DecodeRead(unzip_file_, buff, file_h.path_len);
+	path path_ = unzip_dir_dest_.wstring() + path(buff).wstring();
 
 	if (!exists(path_.parent_path()))
 		create_directories(path_.parent_path());
 
 	std::ofstream fout(path_, std::ios::out | std::ios::binary);
-	Decompress(fout, __unzip_file, file_h);
+	Decompress(fout, unzip_file_, file_h);
 
 	return true;
 }
@@ -216,7 +216,7 @@ void XyzipImp::EncodeWrite(std::ofstream& fout, const char* str, std::streamsize
 
 	for (; idx < count; idx += STEP)
 	{
-		code = Encrypt(UINT_CAST(str[idx]), __level);
+		code = Encrypt(UINT_CAST(str[idx]), level_);
 		fout.write(&CHAR_CAST(code), min(STEP, count - idx));
 	}
 }
@@ -231,7 +231,7 @@ void XyzipImp::DecodeRead(std::ifstream& fin, char* str, std::streamsize count) 
 	{
 		len = min(STEP, (unsigned)count - idx);
 		fin.read(&CHAR_CAST(code), len);
-		auto temp = Decrypt(code, __level);
+		auto temp = Decrypt(code, level_);
 		memcpy(&str[idx], &temp, len);
 	}
 }
@@ -239,7 +239,7 @@ void XyzipImp::DecodeRead(std::ifstream& fin, char* str, std::streamsize count) 
 inline unsigned XyzipImp::Encrypt(unsigned code, unsigned level) const
 {
 	for (unsigned i = 0; i < level; ++i)
-		code = ~code + __key ^ __key;
+		code = ~code + key_ ^ key_;
 
 	return code;
 }
@@ -247,19 +247,19 @@ inline unsigned XyzipImp::Encrypt(unsigned code, unsigned level) const
 inline unsigned XyzipImp::Decrypt(unsigned code, unsigned level) const
 {
 	for (unsigned i = 0; i < level; ++i)
-		code = ~(code ^ __key) + __key;
+		code = ~(code ^ key_) + key_;
 
 	return code;
 }
 
 void XyzipImp::GenerateLevel()
 {
-	auto key = __key;
-	__level = 0;
+	auto key = key_;
+	level_ = 0;
 
 	while (key)
 	{
-		__level += key & 0x1;
+		level_ += key & 0x1;
 		key >>= 1;
 	}
 }

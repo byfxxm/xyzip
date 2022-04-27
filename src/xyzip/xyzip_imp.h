@@ -37,12 +37,12 @@ namespace xyzip
 		void GenerateLevel();
 
 	private:
-		std::ofstream __zip_file;
-		path __zip_file_dest;
-		path __zip_root;
-		std::ifstream __unzip_file;
-		path __unzip_dir_dest;
-		unsigned __key = 'xxm';
-		unsigned __level = 0;
+		std::ofstream zip_file_;
+		path zip_file_dest_;
+		path zip_root_;
+		std::ifstream unzip_file_;
+		path unzip_dir_dest_;
+		unsigned key_ = 'xxm';
+		unsigned level_ = 0;
 	};
 }
