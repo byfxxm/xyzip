@@ -3,7 +3,7 @@
 
 XyzipImp::XyzipImp()
 {
-	__generate_level();
+	GenerateLevel();
 }
 
 bool XyzipImp::Zip(const char* dest, const char* src)
@@ -23,12 +23,12 @@ bool XyzipImp::Zip(const char* dest, const char* src)
 		if (is_directory(src_))
 		{
 			__zip_root = src_;
-			__push_directory(src_);
+			PushDirectory(src_);
 		}
 		else if (is_regular_file(src_))
 		{
 			__zip_root = src_.parent_path();
-			__push_file(src_);
+			PushFile(src_);
 		}
 		else
 			assert(0);
@@ -55,7 +55,7 @@ bool XyzipImp::Unzip(const char* dest, const char* src)
 	try
 	{
 		__unzip_file.open(src_, std::ios::in | std::ios::binary);
-		while (__pop_file());
+		while (PopFile());
 	}
 	catch (std::exception ex)
 	{
@@ -67,13 +67,13 @@ bool XyzipImp::Unzip(const char* dest, const char* src)
 	return ret;
 }
 
-void XyzipImp::setk(unsigned k)
+void XyzipImp::SetKey(unsigned k)
 {
 	__key = k;
-	__generate_level();
+	GenerateLevel();
 }
 
-void XyzipImp::__push_file(const path& src)
+void XyzipImp::PushFile(const path& src)
 {
 	assert(is_regular_file(src));
 	assert(__zip_file.is_open());
@@ -87,16 +87,16 @@ void XyzipImp::__push_file(const path& src)
 	std::string path_str = src.string().substr(__zip_root.string().length());
 	file_h.path_len = (unsigned)path_str.length();
 
-	__encode_write(__zip_file, &CHAR_CAST(file_h), sizeof(file_h));
-	__encode_write(__zip_file, path_str.c_str(), file_h.path_len);
+	EncodeWrite(__zip_file, &CHAR_CAST(file_h), sizeof(file_h));
+	EncodeWrite(__zip_file, path_str.c_str(), file_h.path_len);
 
 	std::ifstream fin(src, std::ios::in | std::ios::binary);
-	__compress(__zip_file, fin);
+	Compress(__zip_file, fin);
 
 	__zip_file.flush();
 }
 
-void XyzipImp::__push_directory(const path& src)
+void XyzipImp::PushDirectory(const path& src)
 {
 	assert(is_directory(src));
 	assert(__zip_file.is_open());
@@ -104,39 +104,39 @@ void XyzipImp::__push_directory(const path& src)
 	for (auto& path_entry : directory_iterator(src))
 	{
 		if (path_entry.is_directory())
-			__push_directory(path_entry);
+			PushDirectory(path_entry);
 		else if (path_entry.is_regular_file())
-			__push_file(path_entry);
+			PushFile(path_entry);
 		else
 			assert(0);
 	}
 }
 
-bool XyzipImp::__pop_file()
+bool XyzipImp::PopFile()
 {
 	if (__unzip_file.peek() == EOF)
 		return false;
 
 	FileHead file_h;
-	__decode_read(__unzip_file, &CHAR_CAST(file_h), sizeof(file_h));
+	DecodeRead(__unzip_file, &CHAR_CAST(file_h), sizeof(file_h));
 
 	if (file_h.tag != FILE_TAG)
 		throw std::exception("unzip file error");
 
 	char buff[MAX_PATH]{};
-	__decode_read(__unzip_file, buff, file_h.path_len);
+	DecodeRead(__unzip_file, buff, file_h.path_len);
 	path path_ = __unzip_dir_dest.wstring() + path(buff).wstring();
 
 	if (!exists(path_.parent_path()))
 		create_directories(path_.parent_path());
 
 	std::ofstream fout(path_, std::ios::out | std::ios::binary);
-	__decompress(fout, __unzip_file, file_h);
+	Decompress(fout, __unzip_file, file_h);
 
 	return true;
 }
 
-void XyzipImp::__compress(std::ofstream& fout, std::ifstream& fin) const
+void XyzipImp::Compress(std::ofstream& fout, std::ifstream& fin) const
 {
 	assert(fin.is_open() && fout.is_open());
 
@@ -145,14 +145,14 @@ void XyzipImp::__compress(std::ofstream& fout, std::ifstream& fin) const
 		if (rle_h.count < 3)
 		{
 			for (unsigned i = 0; i < rle_h.count; ++i)
-				__encode_write(fout, &CHAR_CAST(rle_h.data));
+				EncodeWrite(fout, &CHAR_CAST(rle_h.data));
 
 			return;
 		}
 
-		__encode_write(fout, &CHAR_CAST(rle_h.tag));
-		__encode_write(fout, &CHAR_CAST(rle_h.count));
-		__encode_write(fout, &CHAR_CAST(rle_h.data));
+		EncodeWrite(fout, &CHAR_CAST(rle_h.tag));
+		EncodeWrite(fout, &CHAR_CAST(rle_h.count));
+		EncodeWrite(fout, &CHAR_CAST(rle_h.data));
 	};
 
 	RleHead rle_h;
@@ -165,7 +165,7 @@ void XyzipImp::__compress(std::ofstream& fout, std::ifstream& fin) const
 		if (fin.eof())
 		{
 			write_rle(fout, rle_h);
-			__encode_write(fout, &CHAR_CAST(input), fin.gcount());
+			EncodeWrite(fout, &CHAR_CAST(input), fin.gcount());
 			break;
 		}
 
@@ -177,7 +177,7 @@ void XyzipImp::__compress(std::ofstream& fout, std::ifstream& fin) const
 	}
 }
 
-void XyzipImp::__decompress(std::ofstream& fout, std::ifstream& fin, FileHead& file_h) const
+void XyzipImp::Decompress(std::ofstream& fout, std::ifstream& fin, FileHead& file_h) const
 {
 	assert(fin.is_open() && fout.is_open());
 
@@ -187,7 +187,7 @@ void XyzipImp::__decompress(std::ofstream& fout, std::ifstream& fin, FileHead& f
 
 	while (left >= STEP)
 	{
-		__decode_read(fin, &CHAR_CAST(input));
+		DecodeRead(fin, &CHAR_CAST(input));
 
 		if (input != RLE_TAG)
 		{
@@ -196,8 +196,8 @@ void XyzipImp::__decompress(std::ofstream& fout, std::ifstream& fin, FileHead& f
 			continue;
 		}
 
-		__decode_read(fin, &CHAR_CAST(rle_h.count));
-		__decode_read(fin, &CHAR_CAST(rle_h.data));
+		DecodeRead(fin, &CHAR_CAST(rle_h.count));
+		DecodeRead(fin, &CHAR_CAST(rle_h.data));
 
 		for (unsigned i = 0; i < rle_h.count; ++i)
 			fout.write(&CHAR_CAST(rle_h.data), STEP);
@@ -205,23 +205,23 @@ void XyzipImp::__decompress(std::ofstream& fout, std::ifstream& fin, FileHead& f
 		left -= (decltype(left))STEP * rle_h.count;
 	}
 
-	__decode_read(fin, &CHAR_CAST(input), left);
+	DecodeRead(fin, &CHAR_CAST(input), left);
 	fout.write(&CHAR_CAST(input), left);
 }
 
-void XyzipImp::__encode_write(std::ofstream& fout, const char* str, std::streamsize count) const
+void XyzipImp::EncodeWrite(std::ofstream& fout, const char* str, std::streamsize count) const
 {
 	unsigned idx = 0;
 	unsigned code = 0;
 
 	for (; idx < count; idx += STEP)
 	{
-		code = __encrypt(UINT_CAST(str[idx]), __level);
+		code = Encrypt(UINT_CAST(str[idx]), __level);
 		fout.write(&CHAR_CAST(code), min(STEP, count - idx));
 	}
 }
 
-void XyzipImp::__decode_read(std::ifstream& fin, char* str, std::streamsize count) const
+void XyzipImp::DecodeRead(std::ifstream& fin, char* str, std::streamsize count) const
 {
 	unsigned idx = 0;
 	unsigned code = 0;
@@ -231,12 +231,12 @@ void XyzipImp::__decode_read(std::ifstream& fin, char* str, std::streamsize coun
 	{
 		len = min(STEP, (unsigned)count - idx);
 		fin.read(&CHAR_CAST(code), len);
-		auto temp = __decrypt(code, __level);
+		auto temp = Decrypt(code, __level);
 		memcpy(&str[idx], &temp, len);
 	}
 }
 
-inline unsigned XyzipImp::__encrypt(unsigned code, unsigned level) const
+inline unsigned XyzipImp::Encrypt(unsigned code, unsigned level) const
 {
 	for (unsigned i = 0; i < level; ++i)
 		code = ~code + __key ^ __key;
@@ -244,7 +244,7 @@ inline unsigned XyzipImp::__encrypt(unsigned code, unsigned level) const
 	return code;
 }
 
-inline unsigned XyzipImp::__decrypt(unsigned code, unsigned level) const
+inline unsigned XyzipImp::Decrypt(unsigned code, unsigned level) const
 {
 	for (unsigned i = 0; i < level; ++i)
 		code = ~(code ^ __key) + __key;
@@ -252,7 +252,7 @@ inline unsigned XyzipImp::__decrypt(unsigned code, unsigned level) const
 	return code;
 }
 
-void XyzipImp::__generate_level()
+void XyzipImp::GenerateLevel()
 {
 	auto key = __key;
 	__level = 0;

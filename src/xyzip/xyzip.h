@@ -6,13 +6,8 @@
 #define XYZIP_AIP __declspec(dllimport)
 #endif
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+extern "C" {
 	XYZIP_AIP bool xy_zip(const char* dest, const char* src);
 	XYZIP_AIP bool xy_unzip(const char* dest, const char* src);
 	XYZIP_AIP void xy_setk(unsigned key);
-#ifdef __cplusplus
 }
-#endif

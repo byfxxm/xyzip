@@ -22,19 +22,19 @@ namespace xyzip
 		XyzipImp();
 		bool Zip(const char*, const char*);
 		bool Unzip(const char*, const char*);
-		void setk(unsigned);
+		void SetKey(unsigned);
 
 	private:
-		void __push_file(const path&);
-		void __push_directory(const path&);
-		bool __pop_file();
-		void __compress(std::ofstream&, std::ifstream&) const;
-		void __decompress(std::ofstream&, std::ifstream&, FileHead&) const;
-		void __encode_write(std::ofstream&, const char*, std::streamsize = STEP) const;
-		void __decode_read(std::ifstream&, char*, std::streamsize = STEP) const;
-		unsigned __encrypt(unsigned, unsigned) const;
-		unsigned __decrypt(unsigned, unsigned) const;
-		void __generate_level();
+		void PushFile(const path&);
+		void PushDirectory(const path&);
+		bool PopFile();
+		void Compress(std::ofstream&, std::ifstream&) const;
+		void Decompress(std::ofstream&, std::ifstream&, FileHead&) const;
+		void EncodeWrite(std::ofstream&, const char*, std::streamsize = STEP) const;
+		void DecodeRead(std::ifstream&, char*, std::streamsize = STEP) const;
+		unsigned Encrypt(unsigned, unsigned) const;
+		unsigned Decrypt(unsigned, unsigned) const;
+		void GenerateLevel();
 
 	private:
 		std::ofstream __zip_file;

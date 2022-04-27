@@ -20,5 +20,5 @@ bool xy_unzip(const char* file, const char* directory)
 
 void xy_setk(unsigned key)
 {
-	return instance().setk(key);
+	return instance().SetKey(key);
 }
