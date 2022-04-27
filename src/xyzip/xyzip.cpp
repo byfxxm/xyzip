@@ -15,7 +15,7 @@ bool xy_zip(const char* path, const char* directory)
 
 bool xy_unzip(const char* file, const char* directory)
 {
-	return instance().unzip(file, directory);
+	return instance().Unzip(file, directory);
 }
 
 void xy_setk(unsigned key)

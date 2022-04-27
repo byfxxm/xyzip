@@ -21,7 +21,7 @@ namespace xyzip
 	public:
 		XyzipImp();
 		bool Zip(const char*, const char*);
-		bool unzip(const char*, const char*);
+		bool Unzip(const char*, const char*);
 		void setk(unsigned);
 
 	private:

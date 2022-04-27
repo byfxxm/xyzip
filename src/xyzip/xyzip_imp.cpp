@@ -38,7 +38,7 @@ bool XyzipImp::Zip(const char* dest, const char* src)
 	return true;
 }
 
-bool XyzipImp::unzip(const char* dest, const char* src)
+bool XyzipImp::Unzip(const char* dest, const char* src)
 {
 	path src_(src);
 	path dest_(dest);
