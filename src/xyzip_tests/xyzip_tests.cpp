@@ -21,8 +21,7 @@
 
 #pragma comment(lib, LIB_DIR "xyzip.lib")
 
-int main()
-{
+int main() {
 #if 1
 	std::filesystem::remove_all("tests\\pack");
 	xy_setk('nike');
@@ -40,23 +39,18 @@ int main()
 #else
 	std::string s1, s2, s3;
 
-	while (1)
-	{
+	while (1) {
 		std::cout << "(1)zip or (2)unzip: ";
 		std::cin >> s1;
 
-		try
-		{
-			if (std::stoi(s1) == 1)
-			{
-				do
-				{
+		try {
+			if (std::stoi(s1) == 1) {
+				do {
 					std::cout << "input source directory: ";
 					std::cin >> s1;
 				} while (!std::filesystem::is_directory(s1) && !std::filesystem::is_regular_file(s1));
 
-				do
-				{
+				do {
 					std::cout << "input dest directory: ";
 					std::cin >> s2;
 				} while (!std::filesystem::is_directory(s2));
@@ -69,16 +63,13 @@ int main()
 				auto res = xy_zip(s2.c_str(), s1.c_str());
 				std::cout << (res ? "zip success!" : "zip fail!") << std::endl;
 			}
-			else if (std::stoi(s1) == 2)
-			{
-				do
-				{
+			else if (std::stoi(s1) == 2) {
+				do {
 					std::cout << "input source file: ";
 					std::cin >> s1;
 				} while (!std::filesystem::is_regular_file(s1));
 
-				do
-				{
+				do {
 					std::cout << "input dest directory: ";
 					std::cin >> s2;
 				} while (!std::filesystem::is_directory(s2));
@@ -92,8 +83,7 @@ int main()
 				std::cout << (res ? "unzip success!" : "unzip fail!") << std::endl;
 			}
 		}
-		catch (...)
-		{
+		catch (...) {
 			std::cout << "input error!" << std::endl;
 		}
 	}
