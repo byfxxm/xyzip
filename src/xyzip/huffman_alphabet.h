@@ -1,15 +1,13 @@
 #pragma once
 
-class huffman_alphabet
-{
+class huffman_alphabet {
 public:
 
 	using letter_ty = unsigned char;
 	using code_ty = unsigned;
 	using weight_ty = unsigned;
 
-	struct node
-	{
+	struct node {
 		node(weight_ty w, letter_ty l) : weight(w), letter(l) {}
 		node(weight_ty w) : weight(w) {}
 

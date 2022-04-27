@@ -18,10 +18,10 @@
 #define CHAR_CAST(var) (*(char*)&(var))
 #define UINT_CAST(var) (*(unsigned*)&(var))
 
-constexpr auto EXT = L".xyzip";
-constexpr auto FILE_TAG = 0xFABCBCDC;
-constexpr auto RLE_TAG = 0xFFABCBCD;
-constexpr auto STEP = sizeof(unsigned);
+constexpr auto kExt = L".xyzip";
+constexpr auto kFileTag = 0xFABCBCDC;
+constexpr auto kRleTag = 0xFFABCBCD;
+constexpr auto kStep = sizeof(unsigned);
 
 namespace xyzip {}
 using namespace xyzip;

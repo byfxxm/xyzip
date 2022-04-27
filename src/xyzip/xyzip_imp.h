@@ -1,23 +1,19 @@
 #pragma once
 
-namespace xyzip
-{
-	struct FileHead
-	{
-		unsigned tag = FILE_TAG;
+namespace xyzip {
+	struct FileHead {
+		unsigned tag = kFileTag;
 		unsigned path_len = 0;
 		unsigned long long file_len = 0;
 	};
 
-	struct RleHead
-	{
-		unsigned tag = RLE_TAG;
+	struct RleHead {
+		unsigned tag = kRleTag;
 		unsigned count = 0;
 		unsigned data = 0;
 	};
 
-	class XyzipImp
-	{
+	class XyzipImp {
 	public:
 		XyzipImp();
 		bool Zip(const char*, const char*);
@@ -30,8 +26,8 @@ namespace xyzip
 		bool PopFile();
 		void Compress(std::ofstream&, std::ifstream&) const;
 		void Decompress(std::ofstream&, std::ifstream&, FileHead&) const;
-		void EncodeWrite(std::ofstream&, const char*, std::streamsize = STEP) const;
-		void DecodeRead(std::ifstream&, char*, std::streamsize = STEP) const;
+		void EncodeWrite(std::ofstream&, const char*, std::streamsize = kStep) const;
+		void DecodeRead(std::ifstream&, char*, std::streamsize = kStep) const;
 		unsigned Encrypt(unsigned, unsigned) const;
 		unsigned Decrypt(unsigned, unsigned) const;
 		void GenerateLevel();
