@@ -21,24 +21,24 @@ namespace xyzip {
 		void SetKey(unsigned);
 
 	private:
-		void PushFile(const path&);
-		void PushDirectory(const path&);
-		bool PopFile();
-		void Compress(std::ofstream&, std::ifstream&) const;
-		void Decompress(std::ofstream&, std::ifstream&, FileHead&) const;
-		void EncodeWrite(std::ofstream&, const char*, std::streamsize = kStep) const;
-		void DecodeRead(std::ifstream&, char*, std::streamsize = kStep) const;
-		unsigned Encrypt(unsigned, unsigned) const;
-		unsigned Decrypt(unsigned, unsigned) const;
-		void GenerateLevel();
+		void _PushFile(const path&);
+		void _PushDirectory(const path&);
+		bool _PopFile();
+		void _Compress(std::ofstream&, std::ifstream&) const;
+		void _Decompress(std::ofstream&, std::ifstream&, FileHead&) const;
+		void _EncodeWrite(std::ofstream&, const char*, std::streamsize = kStep) const;
+		void _DecodeRead(std::ifstream&, char*, std::streamsize = kStep) const;
+		unsigned _Encrypt(unsigned, unsigned) const;
+		unsigned _Decrypt(unsigned, unsigned) const;
+		void _GenerateLevel();
 
 	private:
-		std::ofstream zip_file_;
-		path zip_file_dest_;
-		path zip_root_;
-		std::ifstream unzip_file_;
-		path unzip_dir_dest_;
-		unsigned key_ = 'xxm';
-		unsigned level_ = 0;
+		std::ofstream _zip_file;
+		path _zip_file_dest;
+		path _zip_root;
+		std::ifstream _unzip_file;
+		path _unzip_dir_dest;
+		unsigned _key = 'xxm';
+		unsigned _level = 0;
 	};
 }
