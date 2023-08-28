@@ -22,9 +22,9 @@
 #pragma comment(lib, LIB_DIR "xyzip.lib")
 
 int main() {
-#if 0
+#if _DEBUG
 	std::filesystem::remove_all("tests\\pack");
-	xy_setk("nike");
+	xy_setk('nike');
 
 	if (!xy_zip("tests", "tests\\pics"))
 		return -1;
