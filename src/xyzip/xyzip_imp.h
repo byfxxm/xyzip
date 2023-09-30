@@ -13,6 +13,20 @@ namespace xyzip {
 		unsigned data = 0;
 	};
 
+	constexpr unsigned Encrypt(unsigned code, unsigned key, unsigned level) {
+		for (unsigned i = 0; i < level; ++i)
+			code = ~code + key ^ key;
+
+		return code;
+	}
+
+	constexpr unsigned Decrypt(unsigned code, unsigned key, unsigned level) {
+		for (unsigned i = 0; i < level; ++i)
+			code = ~(code ^ key) + key;
+
+		return code;
+	}
+
 	class XyzipImp {
 	public:
 		XyzipImp();
@@ -28,8 +42,6 @@ namespace xyzip {
 		void _Decompress(std::ofstream&, std::ifstream&, FileHead&) const;
 		void _EncodeWrite(std::ofstream&, const char*, std::streamsize = kStep) const;
 		void _DecodeRead(std::ifstream&, char*, std::streamsize = kStep) const;
-		unsigned _Encrypt(unsigned, unsigned) const;
-		unsigned _Decrypt(unsigned, unsigned) const;
 		void _GenerateLevel();
 
 	private:

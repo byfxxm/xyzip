@@ -189,7 +189,7 @@ void XyzipImp::_EncodeWrite(std::ofstream& fout, const char* str, std::streamsiz
 	unsigned code = 0;
 
 	for (; idx < count; idx += kStep) {
-		code = _Encrypt(UINT_CAST(str[idx]), _level);
+		code = Encrypt(UINT_CAST(str[idx]), _key, _level);
 		fout.write(&CHAR_CAST(code), min(kStep, count - idx));
 	}
 }
@@ -202,23 +202,9 @@ void XyzipImp::_DecodeRead(std::ifstream& fin, char* str, std::streamsize count)
 	for (; idx < count; idx += kStep) {
 		len = min(kStep, (unsigned)count - idx);
 		fin.read(&CHAR_CAST(code), len);
-		auto temp = _Decrypt(code, _level);
+		auto temp = Decrypt(code, _key, _level);
 		memcpy(&str[idx], &temp, len);
 	}
-}
-
-inline unsigned XyzipImp::_Encrypt(unsigned code, unsigned level) const {
-	for (unsigned i = 0; i < level; ++i)
-		code = ~code + _key ^ _key;
-
-	return code;
-}
-
-inline unsigned XyzipImp::_Decrypt(unsigned code, unsigned level) const {
-	for (unsigned i = 0; i < level; ++i)
-		code = ~(code ^ _key) + _key;
-
-	return code;
 }
 
 void XyzipImp::_GenerateLevel() {
