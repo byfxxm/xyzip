@@ -1,4 +1,18 @@
 #pragma once
+#include <cassert>
+#include <filesystem>
+#include <fstream>
+#define CHAR_CAST(var) (*(char*)&(var))
+#define UINT_CAST(var) (*(unsigned*)&(var))
+
+constexpr auto kExt = L".xyzip";
+constexpr auto kFileTag = 0xFABCBCDC;
+constexpr auto kRleTag = 0xFFABCBCD;
+constexpr auto kStep = sizeof(unsigned);
+
+namespace xyzip {}
+using namespace xyzip;
+using namespace std::filesystem;
 
 namespace xyzip {
 	struct FileHead {
@@ -50,7 +64,7 @@ namespace xyzip {
 		path _zip_root;
 		std::ifstream _unzip_file;
 		path _unzip_dir_dest;
-		unsigned _key = 'xxm';
+		unsigned _key = static_cast<unsigned>('xxm');
 		unsigned _level = 0;
 	};
 }

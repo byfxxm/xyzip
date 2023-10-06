@@ -1,5 +1,5 @@
-#include "pch.h"
 #include "xyzip_imp.h"
+#include <iostream>
 
 XyzipImp::XyzipImp() {
 	_GenerateLevel();
@@ -108,9 +108,9 @@ bool XyzipImp::_PopFile() {
 	_DecodeRead(_unzip_file, &CHAR_CAST(file_h), sizeof(file_h));
 
 	if (file_h.tag != kFileTag)
-		throw std::exception("unzip file error");
+		throw std::exception();
 
-	char buff[MAX_PATH]{};
+	char buff[1024]{};
 	_DecodeRead(_unzip_file, buff, file_h.path_len);
 	path path_ = _unzip_dir_dest.wstring() + path(buff).wstring();
 
@@ -190,7 +190,7 @@ void XyzipImp::_EncodeWrite(std::ofstream& fout, const char* str, std::streamsiz
 
 	for (; idx < count; idx += kStep) {
 		code = Encrypt(UINT_CAST(str[idx]), _key, _level);
-		fout.write(&CHAR_CAST(code), min(kStep, count - idx));
+		fout.write(&CHAR_CAST(code), std::min((std::streamsize)kStep, count - idx));
 	}
 }
 
@@ -200,7 +200,7 @@ void XyzipImp::_DecodeRead(std::ifstream& fin, char* str, std::streamsize count)
 	unsigned len = 0;
 
 	for (; idx < count; idx += kStep) {
-		len = min(kStep, (unsigned)count - idx);
+		len = std::min((unsigned)kStep, (unsigned)count - idx);
 		fin.read(&CHAR_CAST(code), len);
 		auto temp = Decrypt(code, _key, _level);
 		memcpy(&str[idx], &temp, len);
