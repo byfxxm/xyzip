@@ -8,7 +8,7 @@ else
 endif
 
 d: clean xyzip_imp.o xyzip.o
-	g++ xyzip_imp.o xyzip.o xyzip_tests.cpp -o tests $(gcc_config)
+	g++ xyzip_imp.o xyzip.o xyzip_tests.cpp -o a $(gcc_config)
 	@echo $(show_msg)
 
 r: d
