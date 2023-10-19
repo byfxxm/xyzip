@@ -155,17 +155,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="huffman_alphabet.h" />
-    <ClInclude Include="xyzip.h" />
-    <ClInclude Include="xyzip_imp.h" />
+    <ClInclude Include="xyzip.hpp" />
+    <ClInclude Include="xyzip_imp.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="huffman_alphabet.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="xyzip.cpp" />
     <ClCompile Include="xyzip_imp.cpp" />
   </ItemGroup>

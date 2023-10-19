@@ -1,5 +1,5 @@
-#include "xyzip.h"
-#include "xyzip_imp.h"
+#include "xyzip.hpp"
+#include "xyzip_imp.hpp"
 
 inline XyzipImp &Instance() {
   static XyzipImp inst;
