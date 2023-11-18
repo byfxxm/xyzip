@@ -7,21 +7,7 @@
 #include <iostream>
 #include <string>
 
-#ifdef _WIN64
-#define PLATFORM "x64"
-#else
-#define PLATFORM ""
-#endif
-#ifdef _DEBUG
-#define CONFIGURATION "Debug"
-#else
-#define CONFIGURATION "Release"
-#endif
-#define LIB_DIR "../" PLATFORM "/" CONFIGURATION "/"
-
-#pragma comment(lib, LIB_DIR "xyzip.lib")
-
-Xyzip g_xyzip;
+xyzip::Xyzip g_xyzip;
 
 int main() {
 #if defined(_DEBUG) || !defined(NDEBUG)

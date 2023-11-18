@@ -7,16 +7,13 @@
 #define CHAR_CAST(var) (*(char *)&(var))
 #define UINT_CAST(var) (*(unsigned *)&(var))
 
+namespace xyzip {
+namespace fs = std::filesystem;
 constexpr auto kExt = L".xyzip";
 constexpr auto kFileTag = 0xFABCBCDC;
 constexpr auto kRleTag = 0xFFABCBCD;
 constexpr auto kStep = sizeof(unsigned);
 
-namespace xyzip {}
-using namespace xyzip;
-using namespace std::filesystem;
-
-namespace xyzip {
 struct FileHead {
   unsigned tag = kFileTag;
   unsigned path_len = 0;
@@ -48,8 +45,8 @@ public:
   Xyzip() { _GenerateLevel(); }
 
   bool Zip(const char *dest, const char *src) {
-    path src_(src);
-    path dest_(dest);
+    fs::path src_(src);
+    fs::path dest_(dest);
 
     if ((!is_regular_file(src_) && !is_directory(src_)))
       return false;
@@ -75,8 +72,8 @@ public:
   }
 
   bool Unzip(const char *dest, const char *src) {
-    path src_(src);
-    path dest_(dest);
+    fs::path src_(src);
+    fs::path dest_(dest);
 
     if (!is_regular_file(src_))
       return false;
@@ -106,7 +103,7 @@ public:
   }
 
 private:
-  void _PushFile(const std::filesystem::path &src) {
+  void _PushFile(const fs::path &src) {
     assert(is_regular_file(src));
     assert(_zip_file.is_open());
 
@@ -114,7 +111,7 @@ private:
       return;
 
     FileHead file_h;
-    file_h.file_len = directory_entry(src).file_size();
+    file_h.file_len = fs::directory_entry(src).file_size();
 
     std::string path_str = src.string().substr(_zip_root.string().length());
     file_h.path_len = (unsigned)path_str.length();
@@ -128,11 +125,11 @@ private:
     _zip_file.flush();
   }
 
-  void _PushDirectory(const path &src) {
+  void _PushDirectory(const fs::path &src) {
     assert(is_directory(src));
     assert(_zip_file.is_open());
 
-    for (auto &path_entry : directory_iterator(src)) {
+    for (auto &path_entry : fs::directory_iterator(src)) {
       if (path_entry.is_directory())
         _PushDirectory(path_entry);
       else if (path_entry.is_regular_file())
@@ -154,7 +151,7 @@ private:
 
     char buff[1024]{};
     _DecodeRead(_unzip_file, buff, file_h.path_len);
-    path path_ = _unzip_dir_dest.wstring() + path(buff).wstring();
+    fs::path path_ = _unzip_dir_dest.wstring() + fs::path(buff).wstring();
 
     if (!exists(path_.parent_path()))
       create_directories(path_.parent_path());
@@ -265,10 +262,10 @@ private:
 
 private:
   std::ofstream _zip_file;
-  path _zip_file_dest;
-  path _zip_root;
+  fs::path _zip_file_dest;
+  fs::path _zip_root;
   std::ifstream _unzip_file;
-  path _unzip_dir_dest;
+  fs::path _unzip_dir_dest;
   unsigned _key = 0x1234BABA;
   unsigned _level = 0;
 };
