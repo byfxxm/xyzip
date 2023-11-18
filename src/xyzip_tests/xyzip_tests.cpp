@@ -21,18 +21,20 @@
 
 #pragma comment(lib, LIB_DIR "xyzip.lib")
 
+Xyzip g_xyzip;
+
 int main() {
 #if defined(_DEBUG) || !defined(NDEBUG)
   std::filesystem::remove_all("tests\\pack");
-  xy_setk(0x2341);
+  g_xyzip.SetKey(0x2341);
 
-  if (!xy_zip("tests", "tests\\pics"))
+  if (!g_xyzip.Zip("tests", "tests\\pics"))
     return -1;
 
   std::cout << "zipped" << std::endl;
 
   std::filesystem::remove_all("tests\\unzip");
-  if (!xy_unzip("tests\\unzip", "tests\\pics.xyzip"))
+  if (!g_xyzip.Unzip("tests\\unzip", "tests\\pics.xyzip"))
     return -1;
 
   std::cout << "unzipped" << std::endl;
@@ -56,9 +58,9 @@ int main() {
         std::cout << "input key: ";
         std::cin >> key;
         if (!key.empty())
-          xy_setk(std::stoul(key));
+          g_xyzip.SetKey(std::stoul(key));
 
-        auto res = xy_zip(dest.string().c_str(), src.string().c_str());
+        auto res = g_xyzip.Zip(dest.string().c_str(), src.string().c_str());
         std::cout << (res ? "zip success!" : "zip fail!") << std::endl;
       } else if (std::stoi(src) == 2) {
         do {
@@ -70,9 +72,9 @@ int main() {
         std::cout << "input key: ";
         std::cin >> key;
         if (!key.empty())
-          xy_setk(std::stoul(key));
+          g_xyzip.SetKey(std::stoul(key));
 
-        auto res = xy_unzip(dest.string().c_str(), src.string().c_str());
+        auto res = g_xyzip.Unzip(dest.string().c_str(), src.string().c_str());
         std::cout << (res ? "unzip success!" : "unzip fail!") << std::endl;
       }
     } catch (...) {

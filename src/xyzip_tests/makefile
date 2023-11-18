@@ -7,17 +7,11 @@ else
 	show_msg=debug
 endif
 
-d: clean xyzip_imp.o xyzip.o
-	g++ xyzip_imp.o xyzip.o xyzip_tests.cpp -o a $(gcc_config)
+d: clean
+	g++ xyzip_tests.cpp -o a $(gcc_config)
 	@echo $(show_msg)
 
 r: d
-
-xyzip_imp.o: xyzip_imp.cpp
-	g++ ../xyzip/xyzip_imp.cpp -c -o xyzip_imp.o $(gcc_config)
-
-xyzip.o: xyzip.cpp
-	g++ ../xyzip/xyzip.cpp -c -o xyzip.o $(gcc_config)
 
 .PHONY: clean
 clean:
